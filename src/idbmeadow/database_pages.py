@@ -3,6 +3,11 @@
 lots of inspiration from: https://github.com/nlitsme/pyidbutil
 """
 import idbmeadow.api_contract as _name_boundary
+from idbmeadow.bounded_io import (
+    DEFAULT_LIMITS as meadow_DEFAULT_LIMITS, ParseBudget as meadow_ParseBudget,
+    IDBFormatError as meadow_FormatError, owned_buffer as meadow_owned_buffer,
+    checked_span as meadow_checked_span, materialize as meadow_materialize,
+)
 import re as meadow_re
 import abc as meadow_abc
 import zlib as meadow_zlib
@@ -27,76 +32,56 @@ except ImportError:
 meadow_logger = meadow_logging.getLogger(__name__)
 
 class meadow_FileHeader(meadow_vstruct.VStruct):
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_c1ebf90', 'buf': 'meadow_buf_local_cfa7b73'}, '__init__')
-    def __init__(meadow_self_c1ebf90, meadow_buf_local_cfa7b73):
-        meadow_vstruct.VStruct.__init__(meadow_self_c1ebf90)
-        meadow_self_c1ebf90.buf = meadow_buf_local_cfa7b73
-        meadow_self_c1ebf90.offsets = []
-        meadow_self_c1ebf90.checksums = []
-        meadow_self_c1ebf90.version = struct.unpack_from('<H', meadow_buf_local_cfa7b73, 30)[0]
-        meadow_self_c1ebf90.signature = v_bytes(size=4)
-        meadow_self_c1ebf90.unk04 = v_uint16()
-        if meadow_self_c1ebf90.version <= 4:
-            meadow_self_c1ebf90.offset1 = v_uint32()
-            meadow_self_c1ebf90.offset2 = v_uint32()
-            meadow_self_c1ebf90.offset3 = v_uint32()
-            meadow_self_c1ebf90.offset4 = v_uint32()
-            meadow_self_c1ebf90.offset5 = v_uint32()
-            meadow_self_c1ebf90.sig2 = v_uint32()
-            meadow_self_c1ebf90._version = v_uint16()
-            meadow_self_c1ebf90.unk20 = v_uint32()
-            meadow_self_c1ebf90.checksum1 = v_uint32()
-            meadow_self_c1ebf90.checksum2 = v_uint32()
-            meadow_self_c1ebf90.checksum3 = v_uint32()
-            meadow_self_c1ebf90.checksum4 = v_uint32()
-            meadow_self_c1ebf90.checksum5 = v_uint32()
-            meadow_self_c1ebf90.offset6 = v_uint32()
-            meadow_self_c1ebf90.checksum6 = v_uint32()
+    """The fixed 64/88 byte database header; offsets are rebuilt on each parse."""
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'buf': 'meadow_buf'}, '__init__')
+    def __init__(meadow_self, meadow_buf):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        meadow_checked_span(meadow_buf, 0, 32, 'database header')
+        meadow_self.version = struct.unpack_from('<H', meadow_buf, 30)[0]
+        if meadow_self.version not in (1, 4, 5, 6):
+            raise meadow_FormatError('unsupported database version')
+        meadow_self.offsets = []
+        meadow_self.checksums = []
+        meadow_self.signature = v_bytes(size=4)
+        meadow_self.unk04 = v_uint16()
+        if meadow_self.version <= 4:
+            for meadow_index in range(1, 6):
+                meadow_self.vsAddField('offset' + str(meadow_index), v_uint32())
         else:
-            meadow_self_c1ebf90.offset1 = v_uint64()
-            meadow_self_c1ebf90.offset2 = v_uint64()
-            meadow_self_c1ebf90.unk16 = v_uint32()
-            meadow_self_c1ebf90.sig2 = v_uint32()
-            meadow_self_c1ebf90._version = v_uint16()
-            meadow_self_c1ebf90.offset3 = v_uint64()
-            meadow_self_c1ebf90.offset4 = v_uint64()
-            meadow_self_c1ebf90.offset5 = v_uint64()
-            meadow_self_c1ebf90.checksum1 = v_uint32()
-            meadow_self_c1ebf90.checksum2 = v_uint32()
-            meadow_self_c1ebf90.checksum3 = v_uint32()
-            meadow_self_c1ebf90.checksum4 = v_uint32()
-            meadow_self_c1ebf90.checksum5 = v_uint32()
-            meadow_self_c1ebf90.offset6 = v_uint64()
-            meadow_self_c1ebf90.checksum6 = v_uint32()
+            meadow_self.offset1 = v_uint64()
+            meadow_self.offset2 = v_uint64()
+            meadow_self.unk16 = v_uint32()
+        meadow_self.sig2 = v_uint32()
+        meadow_self._version = v_uint16()
+        if meadow_self.version <= 4:
+            meadow_self.unk20 = v_uint32()
+        else:
+            for meadow_index in range(3, 6):
+                meadow_self.vsAddField('offset' + str(meadow_index), v_uint64())
+        for meadow_index in range(1, 6):
+            meadow_self.vsAddField('checksum' + str(meadow_index), v_uint32())
+        meadow_self.offset6 = v_uint32() if meadow_self.version <= 4 else v_uint64()
+        meadow_self.checksum6 = v_uint32()
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_c5dd42c', 'fast': 'meadow_fast_1a242da', 'sbytes': 'meadow_sbytes_local_e35f0b8', 'offset': 'meadow_offset_local_4070909'}, 'vsParse')
-    def vsParse(meadow_self_c5dd42c, meadow_sbytes_local_e35f0b8, meadow_offset_local_4070909=0, meadow_fast_1a242da=False):
-        meadow_result_local_aa5c245 = meadow_vstruct.VStruct.vsParse(meadow_self_c5dd42c, meadow_sbytes_local_e35f0b8, meadow_offset_local_4070909, meadow_fast_1a242da)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset1)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset2)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset3)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset4)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset5)
-        meadow_self_c5dd42c.offsets.append(meadow_self_c5dd42c.offset6)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum1)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum2)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum3)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum4)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum5)
-        meadow_self_c5dd42c.checksums.append(meadow_self_c5dd42c.checksum6)
-        return meadow_result_local_aa5c245
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_checked_span(meadow_data, meadow_offset, len(meadow_self), 'database header')
+        if struct.unpack_from('<H', meadow_data, meadow_offset + 30)[0] != meadow_self.version:
+            raise meadow_FormatError('database header version changed')
+        meadow_end = meadow_vstruct.VStruct.vsParse(meadow_self, meadow_data, meadow_offset, False)
+        meadow_self.offsets = [getattr(meadow_self, 'offset' + str(meadow_index)) for meadow_index in range(1, 7)]
+        meadow_self.checksums = [getattr(meadow_self, 'checksum' + str(meadow_index)) for meadow_index in range(1, 7)]
+        return meadow_end
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_0c082b8'}, 'validate')
-    def meadow_validate(meadow_self_0c082b8):
-        if meadow_self_0c082b8.signature not in (b'IDA0', b'IDA1', b'IDA2'):
-            raise ValueError('bad signature')
-        if meadow_self_0c082b8.sig2 != 2864434397:
-            raise ValueError('bad sig2')
-        if meadow_self_0c082b8.version not in (6, 4):
-            raise ValueError('unsupported version')
+    def validate(meadow_self):
+        if meadow_self.signature not in (b'IDA0', b'IDA1', b'IDA2'):
+            raise meadow_FormatError('bad database signature')
+        if meadow_self.sig2 != 0xaabbccdd:
+            raise meadow_FormatError('bad database secondary signature')
+        if meadow_self.version not in (1, 4, 5, 6):
+            raise meadow_FormatError('unsupported database version')
         return True
-    validate = meadow_validate
+    meadow_validate = validate
 
 @_name_boundary.class_contract('COMPRESSION_METHOD', {'NONE': 'meadow_NONE', 'ZLIB': 'meadow_ZLIB'})
 class meadow_COMPRESSION_METHOD:
@@ -104,53 +89,57 @@ class meadow_COMPRESSION_METHOD:
     meadow_ZLIB = 2
 
 class meadow_SectionHeader(meadow_vstruct.VStruct):
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'version': 'meadow_version'}, '__init__')
+    def __init__(meadow_self, meadow_version):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        if meadow_version not in (1, 4, 5, 6):
+            raise meadow_FormatError('unsupported database version')
+        meadow_self.version = meadow_version
+        meadow_self.compression_method = v_uint8()
+        meadow_self.length = v_uint32() if meadow_version <= 4 else v_uint64()
+        meadow_self.is_compressed = False
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_c7b3f76', 'version': 'meadow_version_local_74a98a3'}, '__init__')
-    def __init__(meadow_self_c7b3f76, meadow_version_local_74a98a3):
-        meadow_vstruct.VStruct.__init__(meadow_self_c7b3f76)
-        meadow_self_c7b3f76.version = meadow_version_local_74a98a3
-        meadow_self_c7b3f76.compression_method = v_uint8()
-        if meadow_self_c7b3f76.version <= 4:
-            meadow_self_c7b3f76.length = v_uint32()
-        else:
-            meadow_self_c7b3f76.length = v_uint64()
-        meadow_self_c7b3f76.is_compressed = False
+    def pcb_compression_method(meadow_self):
+        if meadow_self.compression_method not in (0, 2):
+            raise meadow_FormatError('unsupported section compression method')
+        meadow_self.is_compressed = meadow_self.compression_method == 2
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_8467161'}, 'pcb_compression_method')
-    def pcb_compression_method(meadow_self_8467161):
-        if meadow_self_8467161.compression_method == _name_boundary.attributes(meadow_COMPRESSION_METHOD)['NONE']:
-            meadow_self_8467161.is_compressed = False
-        else:
-            meadow_self_8467161.is_compressed = True
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_checked_span(meadow_data, meadow_offset, len(meadow_self), 'section header')
+        return meadow_vstruct.VStruct.vsParse(meadow_self, meadow_data, meadow_offset, False)
 
 class meadow_Section(meadow_vstruct.VStruct):
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'version': 'meadow_version', 'budget': 'meadow_budget'}, '__init__')
+    def __init__(meadow_self, meadow_version, *, meadow_budget=None):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        meadow_self.version = meadow_version
+        meadow_self.header = meadow_SectionHeader(meadow_version)
+        meadow_self._contents = v_bytes()
+        meadow_self.contents = b''
+        meadow_self._parse_budget = meadow_budget or meadow_ParseBudget()
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_05232df', 'version': 'meadow_version_local_5a155c9'}, '__init__')
-    def __init__(meadow_self_05232df, meadow_version_local_5a155c9):
-        meadow_vstruct.VStruct.__init__(meadow_self_05232df)
-        meadow_self_05232df.version = meadow_version_local_5a155c9
-        meadow_self_05232df.header = meadow_SectionHeader(meadow_self_05232df.version)
-        meadow_self_05232df._contents = v_bytes()
-        meadow_self_05232df.contents = b''
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_data = meadow_owned_buffer(meadow_data, meadow_self._parse_budget.limits.max_input_bytes)
+        # Preflight precedes v_bytes length/allocation. Only the declared bytes
+        # belong to this member; the next section must never satisfy truncation.
+        meadow_start = meadow_self.header.vsParse(meadow_data, meadow_offset)
+        meadow_end = meadow_checked_span(meadow_data, meadow_start, meadow_self.header.length, 'section contents')
+        if meadow_self.header.length > meadow_self._parse_budget.limits.max_input_bytes:
+            raise meadow_FormatError('section encoded byte limit exceeded')
+        meadow_payload = bytes(meadow_data[meadow_start:meadow_end])
+        meadow_contents = meadow_materialize(meadow_payload, meadow_self.header.is_compressed, meadow_self._parse_budget)
+        meadow_self.vsSetField('_contents', v_bytes(vbytes=meadow_payload))
+        meadow_self.contents = meadow_contents
+        return meadow_end
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_28bb169'}, 'pcb_header')
-    def pcb_header(meadow_self_28bb169):
-        meadow_self_28bb169['_contents'].vsSetLength(meadow_self_28bb169.header.length)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_ee0db27'}, 'pcb__contents')
-    def pcb__contents(meadow_self_ee0db27):
-        if not meadow_self_ee0db27.header.is_compressed:
-            meadow_self_ee0db27.contents = meadow_self_ee0db27._contents
-        else:
-            meadow_self_ee0db27.contents = meadow_zlib.decompress(meadow_self_ee0db27._contents)
-            meadow_logger.debug('decompressed parsed section.')
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_9ed0ae3'}, 'validate')
-    def meadow_validate(meadow_self_9ed0ae3):
-        if meadow_self_9ed0ae3.header.length == 0:
-            raise ValueError('zero size')
+    def validate(meadow_self):
+        if not meadow_self.header.length:
+            raise meadow_FormatError('zero size')
         return True
-    validate = meadow_validate
+    meadow_validate = validate
+
 meadow_SIZEOF_ENTRY = {2.0: 6, 1.6: 6, 1.5: 4}
 
 class meadow_BranchEntryPointer(meadow_vstruct.VStruct):
@@ -854,132 +843,109 @@ class meadow_SegmentBounds(meadow_vstruct.VStruct):
             meadow_self_57310b2.ofs = meadow_self_57310b2.v_word()
 
 class meadow_ID1(meadow_vstruct.VStruct):
-    """
-    contains flags for each byte.
-    """
+    """Finite flag-page table with the retained version-specific byte layout."""
     PAGE_SIZE = 8192
     SegmentDescriptor = _name_boundary.named_record('SegmentDescriptor', ['bounds', 'offset'])
     SignatureV6 = b'Va4\x00'
     Signature = b'VA*\x00'
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_83d5ee7', 'wordsize': 'meadow_wordsize_local_5c7cc49', 'buf': 'meadow_buf_local_8698144'}, '__init__')
-    def __init__(meadow_self_83d5ee7, meadow_wordsize_local_5c7cc49, meadow_buf_local_8698144=None):
-        meadow_vstruct.VStruct.__init__(meadow_self_83d5ee7)
-        meadow_self_83d5ee7.wordsize = meadow_wordsize_local_5c7cc49
-        if meadow_wordsize_local_5c7cc49 == 4:
-            meadow_self_83d5ee7.v_word = v_uint32
-        elif meadow_wordsize_local_5c7cc49 == 8:
-            meadow_self_83d5ee7.v_word = v_uint64
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'wordsize': 'meadow_wordsize', 'buf': 'meadow_buf'}, '__init__')
+    def __init__(meadow_self, meadow_wordsize, meadow_buf=None):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        if meadow_wordsize not in (4, 8):
+            raise meadow_FormatError('unexpected wordsize')
+        meadow_self.wordsize = meadow_wordsize
+        meadow_self.v_word = v_uint32 if meadow_wordsize == 4 else v_uint64
+        meadow_self.segments = []
+        meadow_self.signature = v_bytes(size=4)
+
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_data = meadow_owned_buffer(meadow_data, meadow_DEFAULT_LIMITS.max_section_bytes)
+        meadow_checked_span(meadow_data, meadow_offset, 4, 'flag page signature')
+        meadow_signature = meadow_data[meadow_offset:meadow_offset + 4]
+        if meadow_signature == meadow_self.Signature:
+            meadow_checked_span(meadow_data, meadow_offset, 20, 'flag page header')
+            meadow_unk04, meadow_count, meadow_unk0c, meadow_pages = struct.unpack_from('<IIII', meadow_data, meadow_offset + 4)
+            meadow_prefix = 20
+            meadow_words = 2
+        elif meadow_signature == meadow_self.SignatureV6:
+            meadow_checked_span(meadow_data, meadow_offset, 8, 'legacy flag page header')
+            meadow_count, meadow_pages = struct.unpack_from('<HH', meadow_data, meadow_offset + 4)
+            meadow_prefix = 8
+            meadow_words = 3
         else:
-            raise RuntimeError('unexpected wordsize')
-        meadow_self_83d5ee7.segments = []
-        meadow_self_83d5ee7.signature = v_bytes(size=4)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_a073751'}, 'pcb_signature')
-    def pcb_signature(meadow_self_a073751):
-        if meadow_self_a073751.signature == meadow_ID1.Signature:
-            meadow_self_a073751.vsAddField('unk04', v_uint32())
-            meadow_self_a073751.vsAddField('segment_count', v_uint32())
-            meadow_self_a073751.vsAddField('unk0C', v_uint32())
-            meadow_self_a073751.vsAddField('page_count', v_uint32())
-        elif meadow_self_a073751.signature == meadow_ID1.SignatureV6:
-            meadow_self_a073751.vsAddField('segment_count', v_uint16())
-            meadow_self_a073751.vsAddField('page_count', v_uint16())
+            raise meadow_FormatError('unsupported flag page signature')
+        # Preserve the earlier decoder's legacy padding convention. A modern
+        # SDK interpretation of all legacy flags is not claimed by this phase.
+        meadow_padding = meadow_self.PAGE_SIZE - (20 + meadow_count * 2 * meadow_self.wordsize)
+        if meadow_padding < 0:
+            raise meadow_FormatError('flag segment table exceeds header page')
+        meadow_table_end = meadow_checked_span(meadow_data, meadow_offset + meadow_prefix, meadow_count * meadow_words * meadow_self.wordsize, 'flag segment table')
+        meadow_body = meadow_checked_span(meadow_data, meadow_table_end, meadow_padding, 'flag page padding')
+        if meadow_pages > (len(meadow_data) - meadow_offset) // meadow_self.PAGE_SIZE:
+            raise meadow_FormatError('flag page count exceeds available pages')
+        meadow_end = min(len(meadow_data), meadow_body + meadow_pages * meadow_self.PAGE_SIZE)
+        meadow_segments = []
+        meadow_array = meadow_vstruct.VArray()
+        meadow_cursor = meadow_offset + meadow_prefix
+        meadow_flags_offset = 0
+        for meadow_index in range(meadow_count):
+            meadow_bounds = meadow_SegmentBounds(meadow_self.wordsize, meadow_signature)
+            meadow_cursor = meadow_bounds.vsParse(meadow_data, meadow_cursor)
+            if meadow_bounds.end < meadow_bounds.start:
+                raise meadow_FormatError('segment ends before it starts')
+            meadow_length = 4 * (meadow_bounds.end - meadow_bounds.start)
+            if meadow_length > meadow_end - meadow_body - meadow_flags_offset:
+                raise meadow_FormatError('segment flags exceed available bytes')
+            meadow_segments.append(meadow_self.SegmentDescriptor(meadow_bounds, meadow_flags_offset))
+            meadow_array.vsAddElement(meadow_bounds)
+            meadow_flags_offset += meadow_length
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        meadow_self.signature = v_bytes(vbytes=meadow_signature)
+        if meadow_signature == meadow_self.Signature:
+            meadow_self.unk04 = v_uint32(meadow_unk04)
+            meadow_self.segment_count = v_uint32(meadow_count)
+            meadow_self.unk0C = v_uint32(meadow_unk0c)
+            meadow_self.page_count = v_uint32(meadow_pages)
         else:
-            raise ValueError('unsupported version')
-        meadow_self_a073751.vsAddField('_segments', meadow_vstruct.VArray())
-        meadow_self_a073751.vsAddField('padding', v_bytes())
-        meadow_self_a073751.vsAddField('buffer', v_bytes())
+            meadow_self.segment_count = v_uint16(meadow_count)
+            meadow_self.page_count = v_uint16(meadow_pages)
+        meadow_self._segments = meadow_array
+        meadow_self.padding = v_bytes(vbytes=memoryview(meadow_data)[meadow_table_end:meadow_body])
+        meadow_self.buffer = v_bytes(vbytes=memoryview(meadow_data)[meadow_body:meadow_end])
+        meadow_self.segments = meadow_segments
+        return meadow_end
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_2406f4a'}, 'pcb_segment_count')
-    def pcb_segment_count(meadow_self_2406f4a):
-        meadow_self_2406f4a['_segments'].vsAddElements(meadow_self_2406f4a.segment_count, meadow_functools.partial(meadow_SegmentBounds, meadow_self_2406f4a.wordsize, meadow_self_2406f4a.signature))
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'ea': 'meadow_ea'}, 'get_segment')
+    def meadow_get_segment(meadow_self, meadow_ea):
+        for meadow_segment in meadow_self.segments:
+            if meadow_segment.bounds.start <= meadow_ea < meadow_segment.bounds.end:
+                return meadow_segment
+        raise KeyError(meadow_ea)
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_702ea18'}, 'pcb__segments')
-    def pcb__segments(meadow_self_702ea18):
-        meadow_offset_local_02b2c31 = 0
-        for meadow_i_ceafd3f in range(meadow_self_702ea18.segment_count):
-            meadow_segment_local_c5de5f1 = meadow_self_702ea18._segments[meadow_i_ceafd3f]
-            meadow_segment_byte_count_local_b45e091 = meadow_segment_local_c5de5f1.end - meadow_segment_local_c5de5f1.start
-            meadow_segment_length_local_1c3cc6c = 4 * meadow_segment_byte_count_local_b45e091
-            meadow_self_702ea18.segments.append(meadow_ID1.SegmentDescriptor(meadow_segment_local_c5de5f1, meadow_offset_local_02b2c31))
-            meadow_offset_local_02b2c31 += meadow_segment_length_local_1c3cc6c
-        meadow_offset_local_02b2c31 = 20 + meadow_self_702ea18.segment_count * (2 * meadow_self_702ea18.wordsize)
-        meadow_padsize_local_346cfe5 = meadow_ID1.PAGE_SIZE - meadow_offset_local_02b2c31
-        meadow_self_702ea18['padding'].vsSetLength(meadow_padsize_local_346cfe5)
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'ea': 'meadow_ea'}, 'get_next_segment')
+    def meadow_get_next_segment(meadow_self, meadow_ea):
+        for meadow_index, meadow_segment in enumerate(meadow_self.segments):
+            if meadow_segment.bounds.start <= meadow_ea < meadow_segment.bounds.end:
+                if meadow_index + 1 >= len(meadow_self.segments):
+                    raise IndexError(meadow_ea)
+                return meadow_self.segments[meadow_index + 1]
+        raise KeyError(meadow_ea)
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_1707caf'}, 'pcb_page_count')
-    def pcb_page_count(meadow_self_1707caf):
-        meadow_self_1707caf['buffer'].vsSetLength(meadow_ID1.PAGE_SIZE * meadow_self_1707caf.page_count)
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'ea': 'meadow_ea'}, 'get_flags')
+    def meadow_get_flags(meadow_self, meadow_ea):
+        meadow_segment = meadow_self.meadow_get_segment(meadow_ea)
+        meadow_offset = meadow_segment.offset + 4 * (meadow_ea - meadow_segment.bounds.start)
+        meadow_checked_span(meadow_self.buffer, meadow_offset, 4, 'address flags')
+        return struct.unpack_from('<I', meadow_self.buffer, meadow_offset)[0]
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_f2b8bc3', 'ea': 'meadow_ea_7e688ef'}, 'get_segment')
-    def meadow_get_segment(meadow_self_f2b8bc3, meadow_ea_7e688ef):
-        """
-        find the segment that contains the given effective address.
-
-        Returns:
-          SegmentDescriptor: segment metadata and location.
-
-        Raises:
-          KeyError: if the given address is not in a segment.
-        """
-        for meadow_segment_local_0648ad0 in meadow_self_f2b8bc3.segments:
-            if meadow_segment_local_0648ad0.bounds.start <= meadow_ea_7e688ef < meadow_segment_local_0648ad0.bounds.end:
-                return meadow_segment_local_0648ad0
-        raise KeyError(meadow_ea_7e688ef)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_0a803f5', 'ea': 'meadow_ea_6bbcf3b'}, 'get_next_segment')
-    def meadow_get_next_segment(meadow_self_0a803f5, meadow_ea_6bbcf3b):
-        """
-        Fetch the next segment.
-
-        Arguments:
-          ea (int): an effective address that should fall within a segment.
-
-        Returns:
-          int: the effective address of the start of a segment.
-
-        Raises:
-          IndexError: if no more segments are found after the given segment.
-          KeyError: if the given effective address does not fall within a segment.
-        """
-        for meadow_i_43c296b, meadow_segment_local_f0eeb36 in enumerate(meadow_self_0a803f5.segments):
-            if meadow_segment_local_f0eeb36.bounds.start <= meadow_ea_6bbcf3b < meadow_segment_local_f0eeb36.bounds.end:
-                if meadow_i_43c296b == len(meadow_self_0a803f5.segments):
-                    raise IndexError(meadow_ea_6bbcf3b)
-                else:
-                    return meadow_self_0a803f5.segments[meadow_i_43c296b + 1]
-        raise KeyError(meadow_ea_6bbcf3b)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_907c07b', 'ea': 'meadow_ea_fe2610c'}, 'get_flags')
-    def meadow_get_flags(meadow_self_907c07b, meadow_ea_fe2610c):
-        """
-        Fetch the flags for the given effective address.
-
-        > Each byte of the program has 32-bit flags (low 8 bits keep the byte value).
-        > These 32 bits are used in GetFlags/SetFlags functions.
-        via: https://www.hex-rays.com/products/ida/support/idapython_docs/idc-module.html
-
-        Arguments:
-          ea (int): the effective address.
-
-        Returns:
-          int: the flags for the given address.
-
-        Raises:
-          KeyError: if the given address does not fall within a segment.
-        """
-        meadow_seg_local_41fb58f = _name_boundary.attributes(meadow_self_907c07b)['get_segment'](meadow_ea_fe2610c)
-        meadow_offset_local_8b70750 = meadow_seg_local_41fb58f.offset + 4 * (meadow_ea_fe2610c - meadow_seg_local_41fb58f.bounds.start)
-        return struct.unpack_from('<I', meadow_self_907c07b.buffer, meadow_offset_local_8b70750)[0]
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_986f59d'}, 'validate')
-    def meadow_validate(meadow_self_986f59d):
-        if meadow_self_986f59d.signature not in (meadow_ID1.Signature, meadow_ID1.SignatureV6):
-            raise ValueError('bad signature')
-        for meadow_segment_local_0e65011 in meadow_self_986f59d.segments:
-            if meadow_segment_local_0e65011.bounds.start > meadow_segment_local_0e65011.bounds.end:
-                raise ValueError('segment ends before it starts')
+    def meadow_validate(meadow_self):
+        if meadow_self.signature not in (meadow_self.Signature, meadow_self.SignatureV6):
+            raise meadow_FormatError('bad signature')
+        for meadow_segment in meadow_self.segments:
+            if meadow_segment.bounds.start > meadow_segment.bounds.end:
+                raise meadow_FormatError('segment ends before it starts')
         return True
     get_segment = meadow_get_segment
     get_next_segment = meadow_get_next_segment
@@ -987,134 +953,136 @@ class meadow_ID1(meadow_vstruct.VStruct):
     validate = meadow_validate
 
 class meadow_NAM(meadow_vstruct.VStruct):
-    """
-    contains pointers to named items.
-    """
+    """Fixed header and bounded name addresses without declared-size allocation."""
     PAGE_SIZE = 8192
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_db908a8', 'wordsize': 'meadow_wordsize_local_1849491', 'buf': 'meadow_buf_local_e846a3a'}, '__init__')
-    def __init__(meadow_self_db908a8, meadow_wordsize_local_1849491, meadow_buf_local_e846a3a=None):
-        meadow_vstruct.VStruct.__init__(meadow_self_db908a8)
-        meadow_self_db908a8.wordsize = meadow_wordsize_local_1849491
-        if meadow_wordsize_local_1849491 == 4:
-            meadow_self_db908a8.v_word = v_uint32
-            meadow_self_db908a8.word_fmt = 'I'
-        elif meadow_wordsize_local_1849491 == 8:
-            meadow_self_db908a8.v_word = v_uint64
-            meadow_self_db908a8.word_fmt = 'Q'
-        else:
-            raise RuntimeError('unexpected wordsize')
-        meadow_self_db908a8.signature = v_bytes(size=4)
-        meadow_self_db908a8.unk04 = v_uint32()
-        meadow_self_db908a8.non_empty = v_uint32()
-        meadow_self_db908a8.unk0C = v_uint32()
-        meadow_self_db908a8.page_count = v_uint32()
-        meadow_self_db908a8.unk14 = meadow_self_db908a8.v_word()
-        meadow_self_db908a8.dword_count = v_uint32()
-        meadow_self_db908a8.name_count = 0
-        meadow_self_db908a8.padding = v_bytes(size=meadow_NAM.PAGE_SIZE - (6 * 4 + meadow_wordsize_local_1849491))
-        meadow_self_db908a8.buffer = v_bytes()
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'wordsize': 'meadow_wordsize', 'buf': 'meadow_buf'}, '__init__')
+    def __init__(meadow_self, meadow_wordsize, meadow_buf=None):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        if meadow_wordsize not in (4, 8):
+            raise meadow_FormatError('unexpected wordsize')
+        meadow_self.wordsize = meadow_wordsize
+        meadow_self.v_word = v_uint32 if meadow_wordsize == 4 else v_uint64
+        meadow_self.word_fmt = 'I' if meadow_wordsize == 4 else 'Q'
+        meadow_self.name_count = 0
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_6183a47'}, 'pcb_page_count')
-    def pcb_page_count(meadow_self_6183a47):
-        meadow_self_6183a47['buffer'].vsSetLength(meadow_self_6183a47.page_count * meadow_NAM.PAGE_SIZE)
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_data = meadow_owned_buffer(meadow_data, meadow_DEFAULT_LIMITS.max_section_bytes)
+        meadow_body = meadow_checked_span(meadow_data, meadow_offset, meadow_self.PAGE_SIZE, 'name header page')
+        meadow_signature, meadow_unk04, meadow_nonempty, meadow_unk0c, meadow_pages = struct.unpack_from('<4sIIII', meadow_data, meadow_offset)
+        meadow_unk14, meadow_count = struct.unpack_from('<' + meadow_self.word_fmt + 'I', meadow_data, meadow_offset + 20)
+        meadow_prefix = meadow_offset + 24 + meadow_self.wordsize
+        # Older NAM layouts expose historical header values differently.
+        # Retain those values but never allocate their declared virtual size.
+        meadow_end = min(len(meadow_data), meadow_body + meadow_pages * meadow_self.PAGE_SIZE)
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        meadow_self.signature = v_bytes(vbytes=meadow_signature)
+        meadow_self.unk04 = v_uint32(meadow_unk04)
+        meadow_self.non_empty = v_uint32(meadow_nonempty)
+        meadow_self.unk0C = v_uint32(meadow_unk0c)
+        meadow_self.page_count = v_uint32(meadow_pages)
+        meadow_self.unk14 = meadow_self.v_word(meadow_unk14)
+        meadow_self.dword_count = v_uint32(meadow_count)
+        meadow_self.name_count = meadow_count // (2 if meadow_self.wordsize == 8 else 1)
+        meadow_self.padding = v_bytes(vbytes=memoryview(meadow_data)[meadow_prefix:meadow_body])
+        meadow_self.buffer = v_bytes(vbytes=memoryview(meadow_data)[meadow_body:meadow_end])
+        return meadow_end
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_77448ce'}, 'pcb_dword_count')
-    def pcb_dword_count(meadow_self_77448ce):
-        meadow_count_local_eb428ca = meadow_self_77448ce.dword_count
-        if meadow_self_77448ce.wordsize == 8:
-            meadow_count_local_eb428ca //= 2
-        meadow_self_77448ce.name_count = meadow_count_local_eb428ca
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_2e67f63'}, 'validate')
-    def meadow_validate(meadow_self_2e67f63):
-        if meadow_self_2e67f63.signature != b'VA*\x00':
-            raise ValueError('bad signature')
-        if meadow_self_2e67f63.unk04 != 3:
-            raise ValueError('unexpected unk04 value')
-        if meadow_self_2e67f63.non_empty not in (0, 1):
-            raise ValueError('unexpected non_empty value')
-        if meadow_self_2e67f63.unk0C != 2048:
-            raise ValueError('unexpected unk0C value')
-        if meadow_self_2e67f63.unk14 != 0:
-            raise ValueError('unexpected unk14 value')
+    def meadow_validate(meadow_self):
+        if meadow_self.signature != b'VA*\x00':
+            raise meadow_FormatError('bad signature')
+        if meadow_self.unk04 != 3:
+            raise meadow_FormatError('unexpected unk04 value')
+        if meadow_self.non_empty not in (0, 1):
+            raise meadow_FormatError('unexpected non_empty value')
+        if meadow_self.unk0C != 2048:
+            raise meadow_FormatError('unexpected unk0C value')
+        if meadow_self.unk14 != 0:
+            raise meadow_FormatError('unexpected unk14 value')
         return True
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_ee50701'}, 'names')
-    def meadow_names(meadow_self_ee50701):
-        meadow_count_local_0f28230 = meadow_self_ee50701.dword_count
-        if meadow_self_ee50701.wordsize == 8:
-            meadow_count_local_0f28230 //= 2
-        meadow_fmt_local_6a13835 = '<{count:d}{word_fmt:s}'.format(count=meadow_count_local_0f28230, word_fmt=meadow_self_ee50701.word_fmt)
-        meadow_size_local_27c3739 = struct.calcsize(meadow_fmt_local_6a13835)
-        if meadow_size_local_27c3739 > len(meadow_self_ee50701.buffer):
-            raise ValueError('buffer too small')
-        return _name_boundary.attributes(struct)['unpack'](meadow_fmt_local_6a13835, meadow_self_ee50701.buffer[:meadow_size_local_27c3739])
+    def meadow_names(meadow_self):
+        meadow_count = meadow_self.dword_count // (2 if meadow_self.wordsize == 8 else 1)
+        meadow_size = meadow_count * meadow_self.wordsize
+        meadow_checked_span(meadow_self.buffer, 0, meadow_size, 'name address table')
+        return tuple(meadow_item[0] for meadow_item in struct.iter_unpack('<' + meadow_self.word_fmt, meadow_self.buffer[:meadow_size]))
     validate = meadow_validate
     names = meadow_names
 meadow_SectionDescriptor = _name_boundary.named_record('SectionDescriptor', ['name', 'cls'])
 meadow_SECTIONS = [meadow_SectionDescriptor('id0', meadow_ID0), meadow_SectionDescriptor('id1', meadow_ID1), meadow_SectionDescriptor('nam', meadow_NAM), meadow_SectionDescriptor('seg', None), meadow_SectionDescriptor('til', meadow_TIL), meadow_SectionDescriptor('id2', None)]
 
 class meadow_IDB(meadow_vstruct.VStruct):
+    """Own one immutable snapshot and one aggregate materialization budget."""
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'buf': 'meadow_buf', 'limits': 'meadow_limits'}, '__init__')
+    def __init__(meadow_self, meadow_buf, *, meadow_limits=meadow_DEFAULT_LIMITS):
+        meadow_vstruct.VStruct.__init__(meadow_self)
+        meadow_self._parse_budget = meadow_ParseBudget(meadow_limits)
+        meadow_self.buf = meadow_owned_buffer(meadow_buf, meadow_limits.max_input_bytes)
+        meadow_self.sections = []
+        for meadow_section in meadow_SECTIONS:
+            object.__setattr__(meadow_self, meadow_section.name, None)
+        meadow_self.header = meadow_FileHeader(meadow_self.buf)
+        meadow_self.wordsize = 0
+        meadow_self.uint = ValueError
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_7700f28', 'buf': 'meadow_buf_local_b2e1c20'}, '__init__')
-    def __init__(meadow_self_7700f28, meadow_buf_local_b2e1c20):
-        meadow_vstruct.VStruct.__init__(meadow_self_7700f28)
-        meadow_self_7700f28.buf = meadow_idb.memview(meadow_buf_local_b2e1c20)
-        meadow_self_7700f28.sections = []
-        meadow_self_7700f28.id0 = None
-        meadow_self_7700f28.id1 = None
-        meadow_self_7700f28.nam = None
-        meadow_self_7700f28.seg = None
-        meadow_self_7700f28.til = None
-        meadow_self_7700f28.id2 = None
-        meadow_self_7700f28.header = meadow_FileHeader(meadow_self_7700f28.buf)
-        meadow_self_7700f28.wordsize = 0
-        meadow_self_7700f28.uint = ValueError
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        if meadow_offset != 0:
+            raise meadow_FormatError('database parsing requires offset zero')
+        meadow_self.buf = meadow_owned_buffer(meadow_data, meadow_self._parse_budget.limits.max_input_bytes)
+        meadow_self._parse_budget = meadow_ParseBudget(meadow_self._parse_budget.limits)
+        meadow_self.sections = []
+        for meadow_section in meadow_SECTIONS:
+            object.__setattr__(meadow_self, meadow_section.name, None)
+        meadow_self.vsSetField('header', meadow_FileHeader(meadow_self.buf))
+        return meadow_vstruct.VStruct.vsParse(meadow_self, meadow_self.buf, 0, False)
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_19c74d5'}, 'pcb_header')
-    def pcb_header(meadow_self_19c74d5):
-        if meadow_self_19c74d5.header.signature == b'IDA1':
-            meadow_self_19c74d5.wordsize = 4
-            meadow_self_19c74d5.uint = _name_boundary.attributes(meadow_idb)['netnode'].uint32
-        elif meadow_self_19c74d5.header.signature == b'IDA2':
-            meadow_self_19c74d5.wordsize = 8
-            meadow_self_19c74d5.uint = _name_boundary.attributes(meadow_idb)['netnode'].uint64
+    def pcb_header(meadow_self):
+        meadow_self.header.validate()
+        if meadow_self.header.signature == b'IDA1':
+            meadow_self.wordsize = 4
+            meadow_self.uint = _name_boundary.attributes(meadow_idb)['netnode'].uint32
+        elif meadow_self.header.signature == b'IDA2':
+            meadow_self.wordsize = 8
+            meadow_self.uint = _name_boundary.attributes(meadow_idb)['netnode'].uint64
         else:
-            raise RuntimeError('unexpected file signature: %s' % meadow_self_19c74d5.header.signature)
-        for meadow_offset_local_3f08edd in meadow_self_19c74d5.header.offsets:
-            if meadow_offset_local_3f08edd == 0:
-                meadow_self_19c74d5.sections.append(None)
+            raise meadow_FormatError('unsupported database signature')
+        meadow_spans = []
+        for meadow_offset in meadow_self.header.offsets:
+            if meadow_offset == 0:
+                meadow_self.sections.append(None)
                 continue
-            meadow_sectionbuf_local_6351c2d = meadow_self_19c74d5.buf[meadow_offset_local_3f08edd:]
-            meadow_section_local_f33652d = meadow_Section(meadow_self_19c74d5.header.version)
-            meadow_section_local_f33652d.vsParse(meadow_sectionbuf_local_6351c2d)
-            meadow_self_19c74d5.sections.append(meadow_section_local_f33652d)
-        for meadow_i_0927fbd, meadow_sectiondef_72e6698 in enumerate(meadow_SECTIONS):
-            if meadow_i_0927fbd > len(meadow_self_19c74d5.sections):
-                meadow_logger.debug('missing section: %s', meadow_sectiondef_72e6698.name)
+            if meadow_offset < (62 if meadow_self.header.version == 1 else len(meadow_self.header)):
+                raise meadow_FormatError('section overlaps database header')
+            meadow_header = meadow_SectionHeader(meadow_self.header.version)
+            meadow_start = meadow_header.vsParse(meadow_self.buf, meadow_offset)
+            meadow_end = meadow_checked_span(meadow_self.buf, meadow_start, meadow_header.length, 'section contents')
+            for meadow_previous_start, meadow_previous_end in meadow_spans:
+                if meadow_offset < meadow_previous_end and meadow_end > meadow_previous_start:
+                    raise meadow_FormatError('overlapping database sections')
+            meadow_spans.append((meadow_offset, meadow_end))
+            meadow_section = meadow_Section(meadow_self.header.version, budget=meadow_self._parse_budget)
+            meadow_section.vsParse(meadow_self.buf, meadow_offset)
+            meadow_self.sections.append(meadow_section)
+        for meadow_descriptor, meadow_section in zip(meadow_SECTIONS, meadow_self.sections):
+            if meadow_section is None or meadow_descriptor.cls is None:
                 continue
-            meadow_section_local_f33652d = meadow_self_19c74d5.sections[meadow_i_0927fbd]
-            if not meadow_section_local_f33652d:
-                meadow_logger.debug('missing section: %s', meadow_sectiondef_72e6698.name)
-                continue
-            if not meadow_sectiondef_72e6698.cls:
-                meadow_logger.warning('section class not implemented: %s', meadow_sectiondef_72e6698.name)
-                continue
-            meadow_s_local_06ebcf3 = meadow_sectiondef_72e6698.cls(buf=meadow_section_local_f33652d.contents, wordsize=meadow_self_19c74d5.wordsize)
-            meadow_s_local_06ebcf3.vsParse(meadow_section_local_f33652d.contents)
-            if isinstance(meadow_s_local_06ebcf3, meadow_TIL):
-                meadow_s_local_06ebcf3.inf = meadow_Root(meadow_self_19c74d5).idainfo
-            object.__setattr__(meadow_self_19c74d5, meadow_sectiondef_72e6698.name, meadow_s_local_06ebcf3)
-            meadow_logger.debug('parsed section: %s', meadow_sectiondef_72e6698.name)
+            meadow_parsed = meadow_descriptor.cls(buf=meadow_section.contents, wordsize=meadow_self.wordsize)
+            if isinstance(meadow_parsed, meadow_TIL):
+                meadow_parsed._parse_budget = meadow_self._parse_budget
+            meadow_parsed.vsParse(meadow_section.contents)
+            if isinstance(meadow_parsed, meadow_TIL):
+                meadow_parsed.inf = meadow_Root(meadow_self).idainfo
+            object.__setattr__(meadow_self, meadow_descriptor.name, meadow_parsed)
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_790566a'}, 'validate')
-    def meadow_validate(meadow_self_790566a):
-        _name_boundary.attributes(meadow_self_790566a.header)['validate']()
-        _name_boundary.attributes(meadow_self_790566a.id0)['validate']()
-        _name_boundary.attributes(meadow_self_790566a.id1)['validate']()
-        _name_boundary.attributes(meadow_self_790566a.nam)['validate']()
-        _name_boundary.attributes(meadow_self_790566a.til)['validate']()
+    def validate(meadow_self):
+        meadow_self.header.validate()
+        for meadow_name in ('id0', 'id1', 'nam'):
+            meadow_section = getattr(meadow_self, meadow_name)
+            if meadow_section is None:
+                raise meadow_FormatError('missing required section: ' + meadow_name)
+            _name_boundary.attributes(meadow_section)['validate']()
         return True
-    validate = meadow_validate
+    meadow_validate = validate
 _name_boundary.module_contract(globals(), {'FileHeader': 'meadow_FileHeader', 'MaxKeyStrategy': 'meadow_MaxKeyStrategy', 'abc': 'meadow_abc', 're': 'meadow_re', 'BranchEntryPointer': 'meadow_BranchEntryPointer', 'EXACT_MATCH': 'meadow_EXACT_MATCH', 'SECTIONS': 'meadow_SECTIONS', 'logger': 'meadow_logger', 'IDB': 'meadow_IDB', 'MIN_KEY': 'meadow_MIN_KEY', 'ExactMatchStrategy': 'meadow_ExactMatchStrategy', 'namedtuple': 'meadow_namedtuple', 'PrefixMatchStrategy': 'meadow_PrefixMatchStrategy', 'functools': 'meadow_functools', 'COMPRESSION_METHOD': 'meadow_COMPRESSION_METHOD', 'ID0': 'meadow_ID0', 'SectionHeader': 'meadow_SectionHeader', 'NAM': 'meadow_NAM', 'PREFIX_MATCH': 'meadow_PREFIX_MATCH', 'BranchEntry': 'meadow_BranchEntry', 'vstruct': 'meadow_vstruct', 'MAX_KEY': 'meadow_MAX_KEY', 'zlib': 'meadow_zlib', 'Page': 'meadow_Page', 'LeafEntry': 'meadow_LeafEntry', 'logging': 'meadow_logging', 'LeafEntryPointer': 'meadow_LeafEntryPointer', 'SIZEOF_ENTRY': 'meadow_SIZEOF_ENTRY', 'FindStrategy': 'meadow_FindStrategy', 'SectionDescriptor': 'meadow_SectionDescriptor', 'idb': 'meadow_idb', 'Cursor': 'meadow_Cursor', 'ID1': 'meadow_ID1', 'ROUND_DOWN_MATCH': 'meadow_ROUND_DOWN_MATCH', 'TIL': 'meadow_TIL', 'Section': 'meadow_Section', 'RoundDownMatchStrategy': 'meadow_RoundDownMatchStrategy', 'Root': 'meadow_Root', 'MinKeyStrategy': 'meadow_MinKeyStrategy', 'SegmentBounds': 'meadow_SegmentBounds', 'fullmatch': 'meadow_fullmatch'})

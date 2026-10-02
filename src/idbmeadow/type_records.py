@@ -3,6 +3,12 @@
 migrate from ida sdk and https://github.com/aerosoul94/tilutil
 """
 import idbmeadow.api_contract as _name_boundary
+from idbmeadow.bounded_io import (
+    ParseBudget as meadow_ParseBudget, IDBFormatError as meadow_FormatError,
+    owned_buffer as meadow_owned_buffer,
+    checked_span as meadow_checked_span, materialize as meadow_materialize,
+    til_record_end as meadow_til_record_end,
+)
 import zlib as meadow_zlib
 from abc import ABCMeta as meadow_ABCMeta, abstractmethod as meadow_abstractmethod
 from vstruct import VStruct as meadow_VStruct
@@ -1433,64 +1439,65 @@ class meadow_TILTypeInfo(meadow_VStruct):
     deserialize = meadow_deserialize
 
 class meadow_TILBucket(meadow_VStruct):
+    """Length checked records with shared decoded byte and definition limits."""
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'flags': 'meadow_flags', 'format': 'meadow_format', 'budget': 'meadow_budget'}, '__init__')
+    def __init__(meadow_self, meadow_flags, meadow_format, *, meadow_budget=None):
+        meadow_VStruct.__init__(meadow_self)
+        meadow_self.flags = meadow_flags
+        meadow_self.format = meadow_format
+        meadow_self._parse_budget = meadow_budget or meadow_ParseBudget()
+        meadow_self.defs = None
+        meadow_self.ndefs = v_uint32()
+        meadow_self.size = v_uint32()
+        meadow_self.csize = v_uint32() if meadow_flags & meadow_TIL_ZIP else None
+        meadow_self.buf = v_bytes()
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_c918ac0', 'flags': 'meadow_flags_local_5eae997', 'format': 'meadow_format_local_35e60e3'}, '__init__')
-    def __init__(meadow_self_c918ac0, meadow_flags_local_5eae997, meadow_format_local_35e60e3):
-        meadow_VStruct.__init__(meadow_self_c918ac0)
-        meadow_self_c918ac0.flags = meadow_flags_local_5eae997
-        meadow_self_c918ac0.format = meadow_format_local_35e60e3
-        meadow_self_c918ac0.defs = None
-        meadow_self_c918ac0.ndefs = v_uint32()
-        meadow_self_c918ac0.size = v_uint32()
-        if meadow_self_c918ac0.flags & meadow_TIL_ZIP:
-            meadow_self_c918ac0.csize = v_uint32()
-        else:
-            meadow_self_c918ac0.csize = None
-        meadow_self_c918ac0.buf = v_bytes()
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'sbytes': 'meadow_data', 'offset': 'meadow_offset', 'fast': 'meadow_fast'}, 'vsParse')
+    def vsParse(meadow_self, meadow_data, meadow_offset=0, meadow_fast=False):
+        meadow_data = meadow_owned_buffer(meadow_data, meadow_self._parse_budget.limits.max_input_bytes)
+        meadow_header_size = 12 if meadow_self.csize is not None else 8
+        meadow_start = meadow_checked_span(meadow_data, meadow_offset, meadow_header_size, 'type bucket header')
+        meadow_ndefs, meadow_size = struct.unpack_from('<II', meadow_data, meadow_offset)
+        meadow_encoded_size = struct.unpack_from('<I', meadow_data, meadow_offset + 8)[0] if meadow_self.csize is not None else meadow_size
+        meadow_end = meadow_checked_span(meadow_data, meadow_start, meadow_encoded_size, 'type bucket contents')
+        if meadow_encoded_size > meadow_self._parse_budget.limits.max_input_bytes:
+            raise meadow_FormatError('encoded type bucket byte limit exceeded')
+        if meadow_ndefs > meadow_size // 14:
+            raise meadow_FormatError('type definition count exceeds bucket contents')
+        meadow_self._parse_budget.charge_definitions(meadow_ndefs)
+        meadow_payload = meadow_materialize(meadow_data[meadow_start:meadow_end], meadow_self.csize is not None, meadow_self._parse_budget, expected_size=meadow_size)
+        meadow_defs = []
+        meadow_cursor = 0
+        for meadow_index in range(meadow_ndefs):
+            meadow_record_end = meadow_til_record_end(meadow_payload, meadow_cursor, meadow_self.format)
+            meadow_record = meadow_TILTypeInfo(meadow_self.format)
+            meadow_actual_end = meadow_record.vsParse(meadow_payload, offset=meadow_cursor)
+            if meadow_actual_end != meadow_record_end or meadow_actual_end <= meadow_cursor:
+                raise meadow_FormatError('type record parser did not consume its declared fields')
+            meadow_cursor = meadow_record_end
+            meadow_defs.append(meadow_record)
+        if meadow_cursor != len(meadow_payload):
+            raise meadow_FormatError('unclaimed bytes after type definitions')
+        meadow_self.ndefs = meadow_ndefs
+        meadow_self.size = meadow_size
+        if meadow_self.csize is not None:
+            meadow_self.csize = meadow_encoded_size
+        meadow_self.vsSetField('buf', v_bytes(vbytes=meadow_payload))
+        meadow_self.defs = meadow_defs
+        meadow_self.__dict__.pop('meadow_ordinal_defs', None)
+        return meadow_end
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_7820766'}, 'pcb_size')
-    def pcb_size(meadow_self_7820766):
-        meadow_self_7820766['buf'].vsSetLength(meadow_self_7820766.size)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_36659dc'}, 'pcb_csize')
-    def pcb_csize(meadow_self_36659dc):
-        if meadow_self_36659dc.csize is not None:
-            meadow_self_36659dc['buf'].vsSetLength(meadow_self_36659dc.csize)
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_da60f34'}, 'pcb_buf')
-    def pcb_buf(meadow_self_da60f34):
-        if meadow_self_da60f34.csize is not None:
-            meadow_buf_local_0fb969c = meadow_zlib.decompress(meadow_self_da60f34.buf)
-            meadow_self_da60f34.vsSetField('buf', meadow_buf_local_0fb969c)
-        else:
-            meadow_buf_local_0fb969c = meadow_self_da60f34.buf.tobytes() if isinstance(meadow_self_da60f34.buf, memoryview) else meadow_self_da60f34.buf
-        meadow_defs_local_48dcd2a = []
-        meadow_offset_local_5fdbe1b = 0
-        for meadow___e7ab9ca in range(meadow_self_da60f34.ndefs):
-            meadow__def_local_46e94cc = meadow_TILTypeInfo(meadow_self_da60f34.format)
-            meadow_offset_local_5fdbe1b = meadow__def_local_46e94cc.vsParse(meadow_buf_local_0fb969c, offset=meadow_offset_local_5fdbe1b)
-            meadow_defs_local_48dcd2a.append(meadow__def_local_46e94cc)
-        meadow_self_da60f34.defs = meadow_defs_local_48dcd2a
-
-    @_name_boundary.callable_contract({'self': 'meadow_self_874f10a', 'name': 'meadow_name_local_5aa10c7'}, 'find_by_name')
-    def meadow_find_by_name(meadow_self_874f10a, meadow_name_local_5aa10c7):
-        if not meadow_self_874f10a.defs:
-            return None
-        meadow__def_local_3efa7f1 = list(filter(lambda meadow_x_57b3b2f: meadow_x_57b3b2f.name == meadow_name_local_5aa10c7, meadow_self_874f10a.defs))
-        if len(meadow__def_local_3efa7f1) == 0:
-            return None
-        return meadow__def_local_3efa7f1[0]
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'name': 'meadow_name'}, 'find_by_name')
+    def meadow_find_by_name(meadow_self, meadow_name):
+        return next((meadow_record for meadow_record in meadow_self.defs or () if meadow_record.name == meadow_name), None)
 
     @meadow_cached_property
-    @_name_boundary.callable_contract({'self': 'meadow_self_f3c44a8'}, 'ordinal_defs')
-    def meadow_ordinal_defs(meadow_self_f3c44a8):
-        return {meadow_i_b29e915.ordinal: meadow_i_b29e915 for meadow_i_b29e915 in meadow_self_f3c44a8.defs}
+    def meadow_ordinal_defs(meadow_self):
+        return {meadow_record.ordinal: meadow_record for meadow_record in meadow_self.defs or ()}
 
-    @_name_boundary.callable_contract({'self': 'meadow_self_a6f1d31', 'ordinal': 'meadow_ordinal_local_fd8e37d'}, 'get_by_ordinal')
-    def meadow_get_by_ordinal(meadow_self_a6f1d31, meadow_ordinal_local_fd8e37d):
-        if meadow_ordinal_local_fd8e37d not in _name_boundary.attributes(meadow_self_a6f1d31)['ordinal_defs']:
-            return None
-        return _name_boundary.attributes(meadow_self_a6f1d31)['ordinal_defs'][meadow_ordinal_local_fd8e37d]
+    @_name_boundary.callable_contract({'self': 'meadow_self', 'ordinal': 'meadow_ordinal'}, 'get_by_ordinal')
+    def meadow_get_by_ordinal(meadow_self, meadow_ordinal):
+        return meadow_self.meadow_ordinal_defs.get(meadow_ordinal)
     find_by_name = meadow_find_by_name
     ordinal_defs = meadow_ordinal_defs
     get_by_ordinal = meadow_get_by_ordinal
@@ -1511,6 +1518,7 @@ class meadow_TIL(meadow_VStruct):
         meadow_VStruct.__init__(meadow_self_6a1ac5d)
         meadow_self_6a1ac5d.wordsize = meadow_wordsize_local_644171e
         meadow_self_6a1ac5d.inf = meadow_inf_local_89b0b2d
+        meadow_self_6a1ac5d._parse_budget = meadow_ParseBudget()
         meadow_self_6a1ac5d.signature = v_str(size=6)
         meadow_self_6a1ac5d.format = v_uint32()
         meadow_self_6a1ac5d.flags = v_uint32()
@@ -1533,11 +1541,11 @@ class meadow_TIL(meadow_VStruct):
             meadow_self_d97b9c6.vsAddField('size_ll', v_uint8())
         if meadow_self_d97b9c6.flags & meadow_TIL_SLD:
             meadow_self_d97b9c6.vsAddField('size_ldbl', v_uint8())
-        meadow_self_d97b9c6.vsAddField('syms', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format))
+        meadow_self_d97b9c6.vsAddField('syms', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format, budget=meadow_self_d97b9c6._parse_budget))
         if meadow_self_d97b9c6.flags & meadow_TIL_ORD:
             meadow_self_d97b9c6.vsAddField('type_ordinal_numbers', v_uint32())
-        meadow_self_d97b9c6.vsAddField('types', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format))
-        meadow_self_d97b9c6.vsAddField('macros', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format))
+        meadow_self_d97b9c6.vsAddField('types', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format, budget=meadow_self_d97b9c6._parse_budget))
+        meadow_self_d97b9c6.vsAddField('macros', meadow_TILBucket(meadow_self_d97b9c6.flags, meadow_self_d97b9c6.format, budget=meadow_self_d97b9c6._parse_budget))
 
     @_name_boundary.callable_contract({'self': 'meadow_self_45e0005'}, 'pcb_title_len')
     def pcb_title_len(meadow_self_45e0005):

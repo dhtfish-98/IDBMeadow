@@ -1,0 +1,77 @@
+{
+  "project": "IDBMeadow",
+  "version": "1.0.2",
+  "date": "2026-10-02",
+  "source_parent": "9a05c57809ff7b28835ba37e504e7d2d79750a80",
+  "phase": "stable bounded input, container/section, flag/name pages and TIL bucket rewrite",
+  "upstream_commit": "5a313f27cf6200e2454eb08ef3b557227fc2e9d7",
+  "boundary_tests": {
+    "passed": 116
+  },
+  "database_observations": {
+    "total": 51,
+    "equal": 47,
+    "precisely_checked_error_changes": 4
+  },
+  "owned_page_observations": {
+    "total": 98,
+    "equal": 80,
+    "precisely_checked_compressed_bucket_fixes": 6,
+    "fixed_header_validation": 2,
+    "actual_consumed_page_ends": 10
+  },
+  "complete_current_suite": {
+    "status": "PASS",
+    "command": "python -m pytest checks -q --runslow --disable-warnings --maxfail=1",
+    "passed": 1767,
+    "strict_xfailed": 1,
+    "seconds": 937.21,
+    "process_exit_code": 0,
+    "runtime_identity_before_after": "22 source hashes identical"
+  },
+  "default_limits": {
+    "input_bytes": 268435456,
+    "section_bytes": 1073741824,
+    "aggregate_materialized_bytes": 2147483648,
+    "type_definitions": 1000000
+  },
+  "runtime_sha256": {
+    "src/idbmeadow/__init__.py": "208d89faf61eab6fb84fced57ed148a7d2bb46583a0147b9ce688410f04c9e0b",
+    "src/idbmeadow/api_contract.py": "6834bbb060f5c8aa991f0cf6c5faf501f4dad31819e2931216d8642fe036991a",
+    "src/idbmeadow/bounded_io.py": "db658ad29af5cf0db8bf0db11f6125b13bb974f48280aa09af7f17cbcc5f35ac",
+    "src/idbmeadow/database_pages.py": "1c93cb03d2353d8b510260edf04d61c4af2e1c0c02972f4a4b4d1d432ad7a27e",
+    "src/idbmeadow/ida_interfaces.py": "cba17544f0395332aea7ace28e90d00297c926f132e9f858221abd38347bb7d4",
+    "src/idbmeadow/node_records.py": "a3d65fdcf5ce501c2e373dc191383a12ee72d67f7eb8e57087d38949059e2f77",
+    "src/idbmeadow/offline_tools/meadow___init__.py": "06161af764b27a33d55e378c3e10a0939470bbc65a3f17a9dc1caabcbe021fcc",
+    "src/idbmeadow/offline_tools/meadow_dump_btree.py": "0582b3a74698c86b4f25448b9393118620ba58711c8a7c1c2c8e5d723650f792",
+    "src/idbmeadow/offline_tools/meadow_dump_scripts.py": "4d4c2fde43eea6a07442cc57e0ab2b6669d490b27ee1d5508e722ece17f5628a",
+    "src/idbmeadow/offline_tools/meadow_dump_section_list.py": "d9119baf52ff99a4c9267f480adb04efd09d6698cbac73ae3e68ca704d2e85d2",
+    "src/idbmeadow/offline_tools/meadow_dump_types.py": "f836f0091a4f941fd71255d553d881c84a115b0949009d33fbba379d6da3a776",
+    "src/idbmeadow/offline_tools/meadow_dump_user.py": "0c2d7bf4c67f99af0ad60b1f81a49a54d7ca798bb7b424584a3533d07ee5922d",
+    "src/idbmeadow/offline_tools/meadow_explore_btree.py": "438829669344cf2b32425e92a3ad10db9e78a5fb181dbf5c207037492d28641d",
+    "src/idbmeadow/offline_tools/meadow_extract_function_names.py": "f8a4a072f83f2a902624d0b82eb8431a95f2383905f21316aa4ba9d1ef43bc76",
+    "src/idbmeadow/offline_tools/meadow_extract_md5.py": "4c72fd3c1c7e02929fc9247e529f05f6eca7a857e2ba23a3bc15ca824981a093",
+    "src/idbmeadow/offline_tools/meadow_extract_version.py": "deebab9b9ba64ba003bc91f45e5b5dc6195ea52e46c268ff8259ab9275906fdf",
+    "src/idbmeadow/offline_tools/meadow_run_ida_script.py": "c5e913b56b5f9922b2abaa17c7aee70b0eb662dfdbae7c96b90ab657074b1cdc",
+    "src/idbmeadow/offline_tools/meadow_yara_fn.py": "1fa4c4566e8d46b756cbd85aae048a9cc47ca9f2fab502522e9d10caaddee69a",
+    "src/idbmeadow/script_environment.py": "efddd080fb8917d7d5e1828a4aba384f254d8b26ef3b5e0281a6e417aefe0e26",
+    "src/idbmeadow/semantic_views.py": "f3608c7107989231d5ed3dc1d22586efabfb9e0457fe216f2358425ca0121a3a",
+    "src/idbmeadow/type_codes.py": "389204b0d7e2386a32e131912fac50ffb3dacb46b7ab00d36dc1bac55945d3bd",
+    "src/idbmeadow/type_records.py": "5d9fad7210f9af693358be4d9949b62a1ad37c38f5e8535b84bf654805d73ac4"
+  },
+  "whole_project_rewrite": "OPEN",
+  "CVP_eligibility": "OPEN",
+  "remaining": [
+    "B-tree search/cursors",
+    "semantic and netnode readers",
+    "type language and recursive interpretation",
+    "IDAPython views and explicit script/export tools",
+    "universal CPU/cache/output bounds",
+    "IDA 8/9 and actual applicant/account/organization evidence"
+  ],
+  "package_consumer_scope": {
+    "runtime_source_files": 22,
+    "checks": 5,
+    "scope": "two database API consumers, compressed TIL record, huge declared section rejection, configured input ceiling; final artifact identity/digests recorded separately"
+  }
+}

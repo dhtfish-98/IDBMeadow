@@ -3,7 +3,8 @@ recursive-include src *.py
 recursive-include checks *
 recursive-include fixtures *
 recursive-include historical_checks *.py
-include harbor_scan.py
+include .gitignore CURRENT_VALIDATION.json
+recursive-include .github *.yml *.yaml
 global-exclude *.pyc
 global-exclude .DS_Store
 prune **/__pycache__

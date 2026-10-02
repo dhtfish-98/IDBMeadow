@@ -19,3 +19,22 @@ Binary fixture filenames and bytes remain fixed comparison inputs. Required __in
 Ordinary local bindings are renamed even when their old spelling also appears in a fixed schema field. Scope-resolved local/global refinements are listed in SYMBOL_MAP.json. NAME_AUDIT.json and checks/naming_audit.py repeat the owned-source lexical audit.
 
 Upstream packaging configuration is expressed in the new pyproject.toml. Distribution/module identity changes deliberately; parsing behavior, CLI flags and external data contracts are verified separately.
+
+## 2026-10-02 substantive parser phase (1.0.2)
+
+Codex-assisted maintenance now adds a new readable `bounded_io.py` implementation
+and replaces the high-level entry functions, fixed header/section/database
+assembly, ID1 flag pages, NAM name pages and TIL bucket materialization/lookup.
+Wire labels, public aliases and retained normal observations remain compatibility
+contracts. The other mapped source and API adapter continue to derive from the
+pinned upstream; this work does not claim independent authorship of those algorithms.
+The source hash audit includes the new readable module; the historical lexical
+prefix check remains explicitly limited to the 32 mapped files. Its naming metric
+does not measure originality, security or CVP eligibility.
+
+Intentional corrections are separately checked: known header layouts 1 and 5
+now validate instead of an unsupported-version error; four malformed database inputs
+now give explicit format errors, six owned compressed TIL fixtures recover
+records instead of the upstream v_bytes length exception, and ID1/NAM parsing
+returns the actually consumed end rather than an offset past available bytes.
+The original fixture bytes and all author/license notices remain unchanged.

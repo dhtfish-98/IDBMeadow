@@ -15,8 +15,8 @@
     "checks/test_meadow_multiarch_disasm.py": "c3b6b88445807e2c97e40a389cda3ae0f6d4870ee228a18e6edc4c7b240b0f42",
     "checks/test_meadow_netnode.py": "acb7a6bbb5eb70f72c855468a59ca426aef8c33abec88b157e600bb92cda2241",
     "checks/test_meadow_scripts.py": "f7984fc48713bcb7262eb58ee425a12d46063bd42a0a82111f777f0da409d049",
-    "src/idbmeadow/__init__.py": "21ef97df61cac3080ae3eb62deee97d8c97b983bac3a8a6b55b952a1f9aed171",
-    "src/idbmeadow/database_pages.py": "191b6fc0e5e9db0e163370bab045cde17cd2ee91a1de68bbe7bc4a487915fc48",
+    "src/idbmeadow/__init__.py": "208d89faf61eab6fb84fced57ed148a7d2bb46583a0147b9ce688410f04c9e0b",
+    "src/idbmeadow/database_pages.py": "1c93cb03d2353d8b510260edf04d61c4af2e1c0c02972f4a4b4d1d432ad7a27e",
     "src/idbmeadow/ida_interfaces.py": "cba17544f0395332aea7ace28e90d00297c926f132e9f858221abd38347bb7d4",
     "src/idbmeadow/node_records.py": "a3d65fdcf5ce501c2e373dc191383a12ee72d67f7eb8e57087d38949059e2f77",
     "src/idbmeadow/offline_tools/meadow___init__.py": "06161af764b27a33d55e378c3e10a0939470bbc65a3f17a9dc1caabcbe021fcc",
@@ -34,7 +34,8 @@
     "src/idbmeadow/script_environment.py": "efddd080fb8917d7d5e1828a4aba384f254d8b26ef3b5e0281a6e417aefe0e26",
     "src/idbmeadow/semantic_views.py": "f3608c7107989231d5ed3dc1d22586efabfb9e0457fe216f2358425ca0121a3a",
     "src/idbmeadow/type_codes.py": "389204b0d7e2386a32e131912fac50ffb3dacb46b7ab00d36dc1bac55945d3bd",
-    "src/idbmeadow/type_records.py": "00a0b81331647c8a029d3c1e38d333efbed207960f125783c794f4420d56572c"
+    "src/idbmeadow/type_records.py": "5d9fad7210f9af693358be4d9949b62a1ad37c38f5e8535b84bf654805d73ac4",
+    "src/idbmeadow/bounded_io.py": "db658ad29af5cf0db8bf0db11f6125b13bb974f48280aa09af7f17cbcc5f35ac"
   },
   "fixed_global_contract_bindings": {
     "checks/conftest.py": [
@@ -58,5 +59,8 @@
     "Capstone fallback constant identities are external API compatibility labels.",
     "Pytest hook, fixture and parametrization callable identities are collection contracts."
   ],
-  "class_scope_exceptions": "Fixed ctypes/vstruct binary fields and hooks, named-record/enum data labels, cmd.Cmd callback names and Python interpreter hooks. See ORIGIN.md."
+  "class_scope_exceptions": "Fixed ctypes/vstruct binary fields and hooks, named-record/enum data labels, cmd.Cmd callback names and Python interpreter hooks. See ORIGIN.md.",
+  "readable_new_modules": [
+    "src/idbmeadow/bounded_io.py"
+  ]
 }
