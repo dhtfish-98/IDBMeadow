@@ -12,6 +12,8 @@ PASS: complete 800-case emulated IDA API suite. PASS: 47 database fixtures plus 
 
 Local automated checks, installable-package consumption, source identity and remote GitHub workflow results are distinct evidence. Remote CI is not presumed from a local pass. No application/verification-program approval or independent authorship claim follows from these checks.
 
+GitHub Actions runs the default bounded test suite plus pinned upstream observations and wheel identity. The complete `--runslow` suite required about 13 minutes on the recorded local Mac; one remote attempt was canceled after 10 minutes, so its local result above is separate evidence rather than a remote full-suite pass.
+
 Fixture provenance: the bundled database files come from the pinned upstream tests/data, retain those original bytes and embedded source metadata, and are not claimed as newly authored samples.
 
 PASS: lexical name audit of 32 mapped owned Python files; 4059 binding-map records and zero ordinary unrenamed function/comprehension bindings. PASS: two independent wheel-consumer checks in a fresh temporary environment, with every installed Python source file compared byte-for-byte. NAME_AUDIT.json records the permitted fixed global contracts.

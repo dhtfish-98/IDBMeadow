@@ -3,8 +3,8 @@
   "hash_algorithm": "SHA-256",
   "files": {
     ".github/workflows/check.yml": {
-      "sha256": "8984783a29cfcf765fe2e413d958ad6dd02d0e94a06d62d6973ac2b903e6eeaa",
-      "bytes": 584,
+      "sha256": "c4e42817612e05f2455e5dea573d7db598ca7721121928b6b5a96081426a215c",
+      "bytes": 585,
       "executable": false
     },
     ".gitignore": {
@@ -48,8 +48,8 @@
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "dc8469a7f53d5b4782c41c01daed6455d6a09220bc26bbd1d51afcf6a8414e7e",
-      "bytes": 2187,
+      "sha256": "32475ae54f4699d3434d1e95bd111aea94ee18a467bd71ac518a4ecbf7812c4f",
+      "bytes": 2512,
       "executable": false
     },
     "checks/__init__.py": {
@@ -428,7 +428,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "a3dfbd4062b0b96a1bdbda1be8e02f51bb7cd79e4312602af9e4dbbe18019435",
+      "sha256": "ff93a3cd8255e640d2bce7970ecfc5e899085aa3bda8dfa34031c10661cbc7f1",
       "bytes": 766,
       "executable": false
     },
