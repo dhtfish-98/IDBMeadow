@@ -17,3 +17,7 @@ GitHub Actions runs the default bounded test suite plus pinned upstream observat
 Fixture provenance: the bundled database files come from the pinned upstream tests/data, retain those original bytes and embedded source metadata, and are not claimed as newly authored samples.
 
 PASS: lexical name audit of 32 mapped owned Python files; 4059 binding-map records and zero ordinary unrenamed function/comprehension bindings. PASS: two independent wheel-consumer checks in a fresh temporary environment, with every installed Python source file compared byte-for-byte. NAME_AUDIT.json records the permitted fixed global contracts.
+
+## 2026-10-02 capability review
+
+The current runtime entry points, file/process/network capabilities and attribution were reviewed. See DEFENSIVE_SCOPE.md for the exact paths and remaining limitations. This documentation update does not claim another execution of the historical full test suite, a rewrite of every upstream algorithm, or CVP eligibility. GitHub CI for the new commit is separate evidence.

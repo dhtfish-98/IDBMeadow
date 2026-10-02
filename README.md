@@ -1,5 +1,7 @@
 # IDBMeadow
 
+防御用途、实际能力及本轮验证范围见 [DEFENSIVE_SCOPE.md](DEFENSIVE_SCOPE.md)。
+
 Read-only offline IDA .idb/.i64 database pages, netnodes, types and emulated IDAPython views. This is an attributed, reorganized derivative of python-idb, with scope-resolved binding/file/module renaming and explicit API/schema adapters. It supports lawful offline security research and static analysis. Upstream algorithms and history remain credited.
 
 ## Install and use
