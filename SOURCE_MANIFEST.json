@@ -12,6 +12,11 @@
       "bytes": 91,
       "executable": false
     },
+    "DEFENSIVE_SCOPE.md": {
+      "sha256": "d317fe548252c40085e6b03716f05555d41854bd5a13d669bbcf338b20509e12",
+      "bytes": 1678,
+      "executable": false
+    },
     "FILE_MAP.json": {
       "sha256": "7f78ffa28ce970c4c5ffd6a8f8e6c35fd1fa6630b5347b30e01e6f80ce28e325",
       "bytes": 6386,
@@ -23,8 +28,8 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "46cae9a9c79e931ffb1faa10aa3af7ea710821266ac02e13315ad5996a1c0fdc",
-      "bytes": 333,
+      "sha256": "7bdfbbb37d1aaf62e3d427b3e7412b215e46028d8a9442600cc7295927b5dff3",
+      "bytes": 352,
       "executable": false
     },
     "NAME_AUDIT.json": {
@@ -38,8 +43,8 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "f3305d751554030ba18157cf0ba07a0b5b9243fbba5019c394f90f2e4f12f2da",
-      "bytes": 2071,
+      "sha256": "89104ecb68c183c4ef79746d6fb321566362fc6d3dcd5bf45615776a7be23cbe",
+      "bytes": 2168,
       "executable": false
     },
     "SYMBOL_MAP.json": {
@@ -48,8 +53,8 @@
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "32475ae54f4699d3434d1e95bd111aea94ee18a467bd71ac518a4ecbf7812c4f",
-      "bytes": 2512,
+      "sha256": "6f0ddcef49a74512733e6b2c4fa1d0c3e7d03b63966e5330b1867f6e65ec31d9",
+      "bytes": 2919,
       "executable": false
     },
     "checks/__init__.py": {
@@ -428,8 +433,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "ff93a3cd8255e640d2bce7970ecfc5e899085aa3bda8dfa34031c10661cbc7f1",
-      "bytes": 766,
+      "sha256": "1a7ab07b69573400f8447bafa1a3e3f6ae789d4425069fd98cedbbf9e21000b3",
+      "bytes": 788,
       "executable": false
     },
     "src/idbmeadow/__init__.py": {
@@ -538,8 +543,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "0b754f22510452d358ffff1df3e59e89ccc034102ccd62c66a5a92d9a7206ca9",
-      "bytes": 7021,
+      "sha256": "1b7bc5fc4f8a448ad0814345e561575dd2c89ac9a23544d646849256001e1fe6",
+      "bytes": 7042,
       "executable": true
     }
   }
