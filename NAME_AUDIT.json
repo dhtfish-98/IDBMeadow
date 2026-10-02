@@ -1,0 +1,62 @@
+{
+  "project": "IDBMeadow",
+  "status": "PASS",
+  "ordinary_unrenamed_function_or_comprehension_bindings": 0,
+  "owned_python_source_sha256": {
+    "checks/conftest.py": "4a2fd5e37013ac87a0b71e31a2a203a621da7792292fd829afb95a95b625751b",
+    "checks/fixture_registry.py": "37673732594a9344a2d92e59c805180e4f53657ca13be5823cb278260860d078",
+    "checks/test_meadow_analysis.py": "029d80f087c8147bfbcc551ad59fd027db0b633c9418d00e0758d7a4e73c1d10",
+    "checks/test_meadow_idaapi.py": "8445c28b9e6f11a244da6bb2d3d44140fe1f134348671f5ae14806fa6f053b61",
+    "checks/test_meadow_idb.py": "abacf2455b1680a41c9e223b12480b40133a951a905203fd3a488ebeee4d706b",
+    "checks/test_meadow_issue22.py": "b95be050d9a9b3b1ec971aa3d403ea6c1ef9df5d9ca4a6aa84bc4380c503cc7c",
+    "checks/test_meadow_issue28.py": "82a2372df3719e650059dc94b233cfbf58fe42ea7cd0c443c08accc3e1161bf3",
+    "checks/test_meadow_issue29.py": "a550eeae3787efc75e2f04103806f8de56c4ca6ddc048449e723d8bb64203548",
+    "checks/test_meadow_issue30.py": "976944dbe821735cc7467fbaaed9bb5f3e02fed2df68a550f7f8c71dddb1084f",
+    "checks/test_meadow_multiarch_disasm.py": "c3b6b88445807e2c97e40a389cda3ae0f6d4870ee228a18e6edc4c7b240b0f42",
+    "checks/test_meadow_netnode.py": "acb7a6bbb5eb70f72c855468a59ca426aef8c33abec88b157e600bb92cda2241",
+    "checks/test_meadow_scripts.py": "f7984fc48713bcb7262eb58ee425a12d46063bd42a0a82111f777f0da409d049",
+    "src/idbmeadow/__init__.py": "21ef97df61cac3080ae3eb62deee97d8c97b983bac3a8a6b55b952a1f9aed171",
+    "src/idbmeadow/database_pages.py": "191b6fc0e5e9db0e163370bab045cde17cd2ee91a1de68bbe7bc4a487915fc48",
+    "src/idbmeadow/ida_interfaces.py": "cba17544f0395332aea7ace28e90d00297c926f132e9f858221abd38347bb7d4",
+    "src/idbmeadow/node_records.py": "a3d65fdcf5ce501c2e373dc191383a12ee72d67f7eb8e57087d38949059e2f77",
+    "src/idbmeadow/offline_tools/meadow___init__.py": "06161af764b27a33d55e378c3e10a0939470bbc65a3f17a9dc1caabcbe021fcc",
+    "src/idbmeadow/offline_tools/meadow_dump_btree.py": "0582b3a74698c86b4f25448b9393118620ba58711c8a7c1c2c8e5d723650f792",
+    "src/idbmeadow/offline_tools/meadow_dump_scripts.py": "4d4c2fde43eea6a07442cc57e0ab2b6669d490b27ee1d5508e722ece17f5628a",
+    "src/idbmeadow/offline_tools/meadow_dump_section_list.py": "d9119baf52ff99a4c9267f480adb04efd09d6698cbac73ae3e68ca704d2e85d2",
+    "src/idbmeadow/offline_tools/meadow_dump_types.py": "f836f0091a4f941fd71255d553d881c84a115b0949009d33fbba379d6da3a776",
+    "src/idbmeadow/offline_tools/meadow_dump_user.py": "0c2d7bf4c67f99af0ad60b1f81a49a54d7ca798bb7b424584a3533d07ee5922d",
+    "src/idbmeadow/offline_tools/meadow_explore_btree.py": "438829669344cf2b32425e92a3ad10db9e78a5fb181dbf5c207037492d28641d",
+    "src/idbmeadow/offline_tools/meadow_extract_function_names.py": "f8a4a072f83f2a902624d0b82eb8431a95f2383905f21316aa4ba9d1ef43bc76",
+    "src/idbmeadow/offline_tools/meadow_extract_md5.py": "4c72fd3c1c7e02929fc9247e529f05f6eca7a857e2ba23a3bc15ca824981a093",
+    "src/idbmeadow/offline_tools/meadow_extract_version.py": "deebab9b9ba64ba003bc91f45e5b5dc6195ea52e46c268ff8259ab9275906fdf",
+    "src/idbmeadow/offline_tools/meadow_run_ida_script.py": "c5e913b56b5f9922b2abaa17c7aee70b0eb662dfdbae7c96b90ab657074b1cdc",
+    "src/idbmeadow/offline_tools/meadow_yara_fn.py": "1fa4c4566e8d46b756cbd85aae048a9cc47ca9f2fab502522e9d10caaddee69a",
+    "src/idbmeadow/script_environment.py": "efddd080fb8917d7d5e1828a4aba384f254d8b26ef3b5e0281a6e417aefe0e26",
+    "src/idbmeadow/semantic_views.py": "f3608c7107989231d5ed3dc1d22586efabfb9e0457fe216f2358425ca0121a3a",
+    "src/idbmeadow/type_codes.py": "389204b0d7e2386a32e131912fac50ffb3dacb46b7ab00d36dc1bac55945d3bd",
+    "src/idbmeadow/type_records.py": "00a0b81331647c8a029d3c1e38d333efbed207960f125783c794f4420d56572c"
+  },
+  "fixed_global_contract_bindings": {
+    "checks/conftest.py": [
+      "pytest_addoption",
+      "pytest_collection_modifyitems",
+      "pytest_configure"
+    ],
+    "checks/fixture_registry.py": [
+      "compressed_i64",
+      "compressed_idb",
+      "elf_idb",
+      "empty_idb",
+      "kernel32_idb",
+      "rundebug",
+      "runslow",
+      "small_idb"
+    ]
+  },
+  "binding_map_records": 4059,
+  "fixed_global_reasons": [
+    "Capstone fallback constant identities are external API compatibility labels.",
+    "Pytest hook, fixture and parametrization callable identities are collection contracts."
+  ],
+  "class_scope_exceptions": "Fixed ctypes/vstruct binary fields and hooks, named-record/enum data labels, cmd.Cmd callback names and Python interpreter hooks. See ORIGIN.md."
+}
