@@ -1,6 +1,8 @@
+> 目录已整理：文档在「项目文档」，构建、缓存与暂存输入在「Build」。从仓库根目录运行 `python3 构建.py --build`；如需使用本文原有源码命令，先运行 `python3 构建.py --stage --ci`，再进入 `Build/源码`。暂存会恢复原输入路径。现有版本和历史验证记录按各自提交理解。
+
 # IDBMeadow
 
-防御用途、实际能力及本轮验证范围见 [DEFENSIVE_SCOPE.md](DEFENSIVE_SCOPE.md)。
+防御用途、实际能力及本轮验证范围见 [DEFENSIVE_SCOPE.md](<DEFENSIVE_SCOPE.md>)。
 
 Offline IDA .idb/.i64 database pages, netnodes, types and emulated IDAPython views. Library parsing reads local bytes; the separately selected script runner executes caller-provided Python and is not a script sandbox. This is an attributed, reorganized derivative of python-idb, with scope-resolved binding/file/module renaming and explicit API/schema adapters. It supports lawful offline security research and static analysis. Upstream algorithms and history remain credited.
 
@@ -29,7 +31,7 @@ The verifier downloads the pinned python-idb source, compares the same offline i
 
 bounded_io owns stable local input and aggregate materialization limits; database_pages owns containers and B-tree pages; node_records owns netnode keys; type_records/type_codes own type metadata; semantic_views exposes recovered objects; ida_interfaces exposes offline IDA API views; script_environment and offline_tools isolate existing script integration. api_contract separates wire/schema/IDA display labels from renamed bindings.
 
-See [ORIGIN.md](ORIGIN.md), [VALIDATION.md](VALIDATION.md), `SYMBOL_MAP.json`, `FILE_MAP.json`, `NAME_AUDIT.json` and `SOURCE_MANIFEST.json` for source/licensing, measured evidence, exact naming exceptions and file hashes.
+See [ORIGIN.md](<ORIGIN.md>), [VALIDATION.md](<VALIDATION.md>), `SYMBOL_MAP.json`, `FILE_MAP.json`, `NAME_AUDIT.json` and `SOURCE_MANIFEST.json` for source/licensing, measured evidence, exact naming exceptions and file hashes.
 
 ## 1.0.2 parser phase
 
