@@ -533,13 +533,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "ccd066013be2579a737cd16834f8d7b2290cd8e456389244fa9bf3b6e58f3d85",
+      "sha256": "ecef8b7540cf680e4f2c05f3c2d3984d82af243130797ed639d69f3819b6cff8",
       "bytes": 1738,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "2c6451a3cfcb014a4c6676c63fb028bd83dfb6b6cc352ba6033980d02e086c29",
-      "bytes": 2705,
+      "sha256": "5de702777dff09ee148c3223fc66da3224619e2bb9aa438cc8b271909c0af881",
+      "bytes": 2692,
       "executable": false
     },
     "项目文档/LICENSE.txt": {
@@ -548,8 +548,8 @@
       "executable": false
     },
     "项目文档/ORIGIN.md": {
-      "sha256": "e8607cc98e88647247d6067cbfd4d9ec07c3ff681dd5f3a6045f1028c77127fb",
-      "bytes": 3335,
+      "sha256": "b6e6c1fee9d835965290047d88505bf11d53318ac679865e26f217d9579f3730",
+      "bytes": 3331,
       "executable": false
     },
     "项目文档/README.md": {

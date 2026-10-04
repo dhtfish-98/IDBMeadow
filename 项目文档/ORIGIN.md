@@ -22,7 +22,7 @@ Upstream packaging configuration is expressed in the new pyproject.toml. Distrib
 
 ## 2026-10-02 substantive parser phase (1.0.2)
 
-Codex-assisted maintenance now adds a new readable `bounded_io.py` implementation
+The 2026-10-02 maintenance adds a new readable `bounded_io.py` implementation
 and replaces the high-level entry functions, fixed header/section/database
 assembly, ID1 flag pages, NAM name pages and TIL bucket materialization/lookup.
 Wire labels, public aliases and retained normal observations remain compatibility
