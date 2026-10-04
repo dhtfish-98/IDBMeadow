@@ -44,10 +44,10 @@ PASS: the final current runtime complete suite returned process exit 0 with
 1,767 passes and one retained strict XFAIL in 937.21 seconds. Its 22 runtime
 source hashes were checked identical before and after execution.
 
-The complete slow-suite status, runtime file hashes, source identity,
-package consumption and later GitHub checks are recorded separately in
-CURRENT_VALIDATION.json and the release evidence. The historical 1,651-case
-results above are not silently reused as this phase's current execution.
+The 1.0.2 complete slow-suite status, runtime file hashes, source identity and
+package consumption are preserved in
+`历史/1.0.2/CURRENT_VALIDATION.json` and the release evidence. The historical
+1,651-case results above are not silently reused as this phase's execution.
 
 OPEN: the runtime is only partially rewritten. Inherited B-tree strategies,
 cursors, semantic and IDAPython queries, type-language recursion and script
@@ -55,3 +55,32 @@ tools remain for later phases. The finite section budget does not establish
 a universal memory/CPU/output bound for those operations. Legacy flag padding
 and NAM interpretation are retained for observation compatibility, not newly
 proven for all legacy IDA versions. The original strict 7.6 XFAIL remains.
+
+## 1.0.3 verifier patch (2026-10-04)
+
+The old `ROOT / 'build'` cleanup could resolve to a retained `Build` directory
+on a case-insensitive filesystem if the full verifier reached that step from a
+root containing `Build`. No prior deletion was observed. The normal staged
+`Build/源码` workflow and the existing Ubuntu CI run had no observed deletion.
+The verifier now removes only a real directory entry named exactly `build` and
+refuses a symlink or non-directory entry.
+
+Four focused cleanup tests passed on the local case-insensitive macOS volume.
+They check that an uppercase `Build` sentinel survives, a real lowercase
+`build` is removed, and symlink and regular-file entries are rejected. The
+first local source candidate's default suite passed with 1,612 passes and 160
+skips in 71.58 seconds.
+A fresh staged 1.0.3 candidate also passed the complete slow suite with 1,771
+passes, one strict XFAIL and 13 warnings in 1000.57 seconds, followed by the
+pinned observations, package identity and isolated wheel-consumer checks. That
+candidate preceded the final wheel change that adds the archived validation
+JSON. The final package is rebuilt and checked separately with the default
+suite; the slow result does not claim execution against its final wheel bytes.
+
+The 13 warnings identify pre-existing `assert (condition,)` expressions in
+`checks/test_meadow_analysis.py`. Each asserts a nonempty tuple, so those
+signature equalities remain OPEN despite the suite passes. Correcting those
+tests and rerunning them is separate work. The 22 runtime Python files remain
+byte-identical to 1.0.2. Current patch results are in CURRENT_VALIDATION.json;
+the original 1.0.2 complete slow-suite record is preserved byte-for-byte at
+`历史/1.0.2/CURRENT_VALIDATION.json`. Remote CI is separate.

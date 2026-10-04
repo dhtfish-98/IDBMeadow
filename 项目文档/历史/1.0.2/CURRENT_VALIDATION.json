@@ -1,21 +1,10 @@
 {
   "project": "IDBMeadow",
-  "version": "1.0.3",
-  "date": "2026-10-04",
-  "source_parent": "8373473e1d7de8f2f3f7bfcb8fa3492b8b0f9286",
-  "phase": "verifier build-directory cleanup patch; runtime source unchanged",
+  "version": "1.0.2",
+  "date": "2026-10-02",
+  "source_parent": "9a05c57809ff7b28835ba37e504e7d2d79750a80",
+  "phase": "stable bounded input, container/section, flag/name pages and TIL bucket rewrite",
   "upstream_commit": "5a313f27cf6200e2454eb08ef3b557227fc2e9d7",
-  "historical_1_0_2_record": {
-    "path": "项目文档/历史/1.0.2/CURRENT_VALIDATION.json",
-    "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
-    "scope": "Original 1.0.2 record, including its complete slow-suite result; preserved byte-for-byte"
-  },
-  "cleanup_tests": {
-    "status": "PASS",
-    "passed": 4,
-    "filesystem": "local case-insensitive macOS volume; build and Build resolve to the same directory when Build is the actual entry",
-    "scope": "uppercase Build sentinel survives, real lowercase build removed, symlink and regular file rejected"
-  },
   "boundary_tests": {
     "passed": 116
   },
@@ -31,35 +20,14 @@
     "fixed_header_validation": 2,
     "actual_consumed_page_ends": 10
   },
-  "current_default_suite": {
+  "complete_current_suite": {
     "status": "PASS",
-    "command": "python -m pytest checks -q -p no:cacheprovider",
-    "passed": 1612,
-    "skipped": 160,
-    "warnings": 13,
-    "seconds": 71.58,
-    "process_exit_code": 0,
-    "runtime_identity": "22 source hashes match the archived 1.0.2 record",
-    "scope": "First local source candidate before adding the archived 1.0.2 JSON to the wheel; final artifact evidence is recorded separately against a fresh staging snapshot"
-  },
-  "current_complete_slow_suite": {
-    "status": "PASS_ON_PRE_FINAL_STAGED_CANDIDATE",
-    "stage": "Build/新构建/20261004T123715Z-d159070e/source",
-    "command": "python verify.py --runslow --baseline <pinned local checkout>",
-    "passed": 1771,
+    "command": "python -m pytest checks -q --runslow --disable-warnings --maxfail=1",
+    "passed": 1767,
     "strict_xfailed": 1,
-    "warnings": 13,
-    "seconds": 1000.57,
+    "seconds": 937.21,
     "process_exit_code": 0,
-    "verifier_gates": "PASS: source identity, naming, pinned upstream observations, wheel/sdist identity and five isolated wheel-consumer checks",
-    "artifact_scope": "This run preceded adding the archived 1.0.2 JSON to the wheel; the final wheel is separately rebuilt and verified by a fresh default run, not claimed to have run the slow suite"
-  },
-  "known_test_gap": {
-    "status": "OPEN",
-    "file": "checks/test_meadow_analysis.py",
-    "count": 13,
-    "issue": "Pre-existing assert (condition,) expressions assert a truthy tuple, so their signature equalities are not established by either suite",
-    "resolution_scope": "Separate test correction and rerun; not part of the 1.0.3 Build cleanup patch"
+    "runtime_identity_before_after": "22 source hashes identical"
   },
   "default_limits": {
     "input_bytes": 268435456,

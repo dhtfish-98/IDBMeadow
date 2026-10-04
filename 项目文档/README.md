@@ -33,6 +33,18 @@ bounded_io owns stable local input and aggregate materialization limits; databas
 
 See [ORIGIN.md](<ORIGIN.md>), [VALIDATION.md](<VALIDATION.md>), `SYMBOL_MAP.json`, `FILE_MAP.json`, `NAME_AUDIT.json` and `SOURCE_MANIFEST.json` for source/licensing, measured evidence, exact naming exceptions and file hashes.
 
+## 1.0.3 verifier patch
+
+The verifier now checks the actual directory entry name before clearing generated
+`build` output. On a case-insensitive filesystem, `build` can otherwise resolve
+to the retained `Build` tree when the full verifier runs from a root containing
+that tree. The cleanup also refuses symlinks and non-directory entries. This
+patch changes verification and packaging metadata; the 22 runtime Python files
+and their public API are unchanged. The complete 1.0.2 validation record is
+preserved at [历史/1.0.2/CURRENT_VALIDATION.json](<历史/1.0.2/CURRENT_VALIDATION.json>).
+The wheel includes that archive beside this README under the same relative
+path. The current patch's measured results are in `CURRENT_VALIDATION.json`.
+
 ## 1.0.2 parser phase
 
 The public `from_file` / `from_buffer` calls now own bounded immutable bytes.
@@ -63,4 +75,5 @@ This phase is partial. B-tree search/cursor semantics, netnode/semantic readers,
 type-language recursion, IDAPython views and script/export tools still contain
 inherited algorithms. Query CPU, all cached objects, report length and explicit
 script execution are not governed by the section materialization budget.
-See `CURRENT_VALIDATION.json` for the exact source and measured results.
+See `历史/1.0.2/CURRENT_VALIDATION.json` for that version's exact source and
+measured results.

@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parent
 WORK = ROOT / '.verification'
 UPSTREAM = 'https://github.com/williballenthin/python-idb.git'
 COMMIT = '5a313f27cf6200e2454eb08ef3b557227fc2e9d7'
-VERSION = '1.0.2'
-DOCUMENTS = ('README.md', 'ORIGIN.md', 'VALIDATION.md', 'DEFENSIVE_SCOPE.md', 'NAME_AUDIT.json', 'CURRENT_VALIDATION.json')
+VERSION = '1.0.3'
+DOCUMENTS = ('README.md', 'ORIGIN.md', 'VALIDATION.md', 'DEFENSIVE_SCOPE.md', 'NAME_AUDIT.json', 'CURRENT_VALIDATION.json', '历史/1.0.2/CURRENT_VALIDATION.json')
 
 
 def run(command, **kwargs):
@@ -120,6 +120,21 @@ def compare_pages(baseline):
     return {'observations': 98, 'equal': 80, 'precisely_checked_compressed_bucket_fixes': 6, 'fixed_header_validation': 2, 'actual_consumed_page_ends': 10}
 
 
+def clear_generated_build(root):
+    # On case-insensitive filesystems, root/'build' can alias the retained Build tree.
+    # Match the directory entry's actual name before removing generated output.
+    with os.scandir(root) as entries:
+        for entry in entries:
+            if entry.name != 'build':
+                continue
+            if entry.is_symlink():
+                raise ValueError('Refusing to remove symlink: ' + entry.path)
+            if not entry.is_dir(follow_symlinks=False):
+                raise ValueError('Refusing to remove non-directory: ' + entry.path)
+            shutil.rmtree(entry.path)
+            return
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--audit-only', action='store_true')
@@ -138,7 +153,7 @@ def main():
     result['test_execution'] = 'not repeated (--skip-tests)' if args.skip_tests else ('complete with slow cases' if args.runslow else 'default suite; slow cases explicitly skipped')
     result['database_comparison'] = compare_databases(baseline)
     result['page_comparison'] = compare_pages(baseline)
-    shutil.rmtree(ROOT / 'build', ignore_errors=True)
+    clear_generated_build(ROOT)
     output = WORK / 'dist' / VERSION
     run([sys.executable, '-m', 'build', '--no-isolation', '--sdist', '--wheel', '--outdir', output])
     wheels = list(output.glob('*.whl')); sources = list(output.glob('*.tar.gz'))

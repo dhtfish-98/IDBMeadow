@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_VALIDATION.json": {
-      "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
-      "bytes": 4338,
+      "sha256": "5cf2d32448b937ff17687e1f66726dea5ffadffc7d6291fff5737fd762be5d63",
+      "bytes": 6170,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -408,8 +408,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "3af3646665eea6b4a05038430e212fb4095174df41e931834e84a983ffa80fdf",
-      "bytes": 990,
+      "sha256": "5648b7c60ccd495d19c32eaf21541d6442c7921298291fe8841d29939f889e6d",
+      "bytes": 1077,
       "executable": false
     },
     "src/idbmeadow/__init__.py": {
@@ -523,8 +523,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "6ddd151eb505047f799a81ac52e51c97eb3c997bd607fdddd78ef957173a2c34",
-      "bytes": 10261,
+      "sha256": "d0b31089cf491c09c3e0c0740ac810db456d994c402d9d83873febd141523958",
+      "bytes": 10922,
       "executable": true
     },
     "构建.py": {
@@ -533,13 +533,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "ecef8b7540cf680e4f2c05f3c2d3984d82af243130797ed639d69f3819b6cff8",
+      "sha256": "2f33ebfcbd8a2a7909c6161e165fb22004b5a97ceee122e9dba1a0872325e0d4",
       "bytes": 1738,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "5de702777dff09ee148c3223fc66da3224619e2bb9aa438cc8b271909c0af881",
-      "bytes": 2692,
+      "sha256": "7150d0ed10a273ed3451de8bc1c8ec7fa3f43589a108623228830f9f8f44a125",
+      "bytes": 2755,
       "executable": false
     },
     "项目文档/LICENSE.txt": {
@@ -553,13 +553,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "330d4f210aba3fce4e9cdae42ae7ee670c455bc5bec92b361435137da9269bed",
-      "bytes": 4661,
+      "sha256": "730da85c4597ee44273286369d3773f8a18df40c1e51f1165656ceaf65ec8d0e",
+      "bytes": 5430,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "77c30e09e7f931ba99492f8650fe1dfb00637a333775d39b527d92852a7f35c3",
-      "bytes": 4874,
+      "sha256": "080be45202c24b35770a67f9ec71a7ea98fcfcb8c8e866dd76c6e65dc1f14c04",
+      "bytes": 6645,
       "executable": false
     },
     "项目文档/checks/data/empty/readme.txt": {
@@ -583,9 +583,19 @@
       "executable": false
     },
     "项目文档/目录与构建.md": {
-      "executable": false,
-      "sha256": "3f7599e7a43cd47108377905ec46e6894317d8e574e3f865157e9fc9bc6d7c72",
-      "bytes": 816
+      "sha256": "4edfacadd604380c93c62035073e8e00dcd7de3275b15ece7780a77b96af7a01",
+      "bytes": 969,
+      "executable": false
+    },
+    "checks/test_verify_build_cleanup.py": {
+      "sha256": "04cb86949d54efce0666e50366ab76911aa3b2f6f73077c30b9ecd89270c3cef",
+      "bytes": 1769,
+      "executable": false
+    },
+    "项目文档/历史/1.0.2/CURRENT_VALIDATION.json": {
+      "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
+      "bytes": 4338,
+      "executable": false
     }
   },
   "directory_layout_maintenance": {
@@ -594,5 +604,11 @@
     "original_inventory_sha256": "55f7828f08bf8f22110cac7ee87cb38440d6bfe5037774e70cea3c75d2b6003d",
     "path_view": "Canonical repository paths; the builder also restores byte-identical legacy aliases under ignored Build for existing packaging checks",
     "scope": "Current file inventory and packaging paths only; runtime bytes/version/API unchanged. Historical validation and security conclusions are retained, not rerun or newly certified."
+  },
+  "build_cleanup_patch": {
+    "version": "1.0.3",
+    "base_commit": "8373473e1d7de8f2f3f7bfcb8fa3492b8b0f9286",
+    "scope": "Verifier cleanup and release metadata only; runtime source bytes unchanged",
+    "historical_validation": "项目文档/历史/1.0.2/CURRENT_VALIDATION.json"
   }
 }
