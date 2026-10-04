@@ -9,7 +9,7 @@ PASS: complete 800-case emulated IDA API suite. PASS: 47 database fixtures plus 
 ## Limits and pre-existing gaps
 
 - OPEN: The upstream repository is archived (GitHub archived=true checked on 2026-10-02). Its documented database scope is IDA 5.0–7.5. IDA 7.6 function-name extraction fails in the pinned original and remains unsupported; IDA 8/9 formats are not claimed.
-- OPEN: Some upstream signature assertions use truthy singleton tuples; their warning is retained and separate exact observation comparisons cover representative recovered values.
+- HISTORICAL OPEN at this renamed baseline: Some upstream signature assertions used truthy singleton tuples; their warning was retained and separate exact observation comparisons covered representative recovered values. The 13 assertions in the owned analysis test file were corrected in 1.0.4 below.
 - OPEN: The parser is read-only. No embedded sample was executed, no live IDA database was changed, and arbitrary user scripts/live IDA integration were not validated.
 
 Local automated checks, installable-package consumption, source identity and remote GitHub workflow results are distinct evidence. Remote CI is not presumed from a local pass. No application/verification-program approval or independent authorship claim follows from these checks.
@@ -81,6 +81,52 @@ The 13 warnings identify pre-existing `assert (condition,)` expressions in
 `checks/test_meadow_analysis.py`. Each asserts a nonempty tuple, so those
 signature equalities remain OPEN despite the suite passes. Correcting those
 tests and rerunning them is separate work. The 22 runtime Python files remain
-byte-identical to 1.0.2. Current patch results are in CURRENT_VALIDATION.json;
+byte-identical to 1.0.2. That patch's results are in
+`历史/1.0.3/CURRENT_VALIDATION.json`;
 the original 1.0.2 complete slow-suite record is preserved byte-for-byte at
 `历史/1.0.2/CURRENT_VALIDATION.json`. Remote CI is separate.
+
+## 1.0.4 test assertion correction (2026-10-04)
+
+The 1.0.3 record's 13 `assert (condition,)` signature checks were truthy
+singleton tuples. All 13 are now boolean comparisons in
+`checks/test_meadow_analysis.py`; an AST check found zero remaining assertions
+of that form in the file. The first affected-only run found 26 passes and one
+failure in the bundled IDA 7.6/x32 fixture at address `1754280366`. The old
+expected signature was
+`int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)`,
+while the actual signature was
+`int (__stdcall sub_689031AE)(PRTL_CRITICAL_SECTION CriticalSection, int, int, int)`.
+Pinned `python-idb@5a313f27cf6200e2454eb08ef3b557227fc2e9d7` returns
+the same actual signature on the exact bundled `v7.6/x32/kernel32.idb` input
+(17,692,398 bytes; SHA-256
+`ff7d4548901b081719f8cf0f51cdccf811f2d7ca7b4b0d8f154420b4e561d15f`).
+Only this fixture-specific 7.6 expectation changed; the other 12 newly active
+signature expectations stayed as they were.
+
+The affected 26 parametrized `test_function` cases plus one Thumb user-call
+case now pass 27/27. The complete analysis test file passes 341/341. The
+default `pytest checks` suite passes 1,612 with 160 intentional slow skips,
+zero warnings, in 67.85 seconds on local macOS/Python 3.12.13. An independent
+complete `--runslow` source run then exited 0 with 1,771 passes, one strict
+XFAIL, zero warnings and no skips in 979.64 seconds. Its exact command, test
+file hash and log digest are in `CURRENT_VALIDATION.json`. This run preceded
+the final verifier output-path and package metadata edits; it is not a claim
+about the later wheel bytes. The 1.0.3 complete slow-suite result remains
+historical in `历史/1.0.3/CURRENT_VALIDATION.json`. All 22 runtime Python
+source files remain byte-identical to the 1.0.3
+base commit `9967db5328c042a2a71f9a27624589603197fdfb`. The original
+7.6 function-name extraction XFAIL and the upstream's documented 5.0–7.5
+range remain unchanged. Remote CI and Release evidence require their own runs.
+
+The verifier's generated upstream checkout, distribution, result and isolated
+wheel-consumer environment now stay under `Build/verification`. It disables
+Python bytecode and pytest cache writes for its child commands, and the source
+distribution prunes this generated path. Packaging runs from a fresh source
+copy inside `Build/verification`, keeping setuptools metadata and wheel
+intermediates out of the retained checkout. Direct-root verification reads the
+canonical license in `项目文档` instead of requiring a restored root alias.
+The package declares `dhtfish98`
+as maintainer while retaining the python-idb source attribution and Apache
+license. Package and direct-root layout checks are recorded separately from
+the slow source suite; that suite did not execute against the package bytes.

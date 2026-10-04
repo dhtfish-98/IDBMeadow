@@ -33,6 +33,21 @@ bounded_io owns stable local input and aggregate materialization limits; databas
 
 See [ORIGIN.md](<ORIGIN.md>), [VALIDATION.md](<VALIDATION.md>), `SYMBOL_MAP.json`, `FILE_MAP.json`, `NAME_AUDIT.json` and `SOURCE_MANIFEST.json` for source/licensing, measured evidence, exact naming exceptions and file hashes.
 
+## 1.0.4 test reliability patch
+
+Thirteen signature checks previously used `assert (condition,)`, which always
+passes because it tests a nonempty tuple. These now compare the actual values.
+One newly exposed mismatch in the bundled IDA 7.6/x32 fixture was an outdated
+expected string: the pinned upstream and IDBMeadow return the same signature
+for that input, so only that fixture-specific expectation was corrected. The
+27 directly affected cases, the default suite, and an independent complete
+slow source suite pass locally. The verifier now writes its generated checkout,
+packages and temporary wheel environment under `Build/verification`, and the
+package lists `dhtfish98` as maintainer. No runtime Python source or public
+API changed. The exact 1.0.3 validation record is
+preserved at [历史/1.0.3/CURRENT_VALIDATION.json](<历史/1.0.3/CURRENT_VALIDATION.json>);
+the current local measurements are in `CURRENT_VALIDATION.json`.
+
 ## 1.0.3 verifier patch
 
 The verifier now checks the actual directory entry name before clearing generated
@@ -43,7 +58,7 @@ patch changes verification and packaging metadata; the 22 runtime Python files
 and their public API are unchanged. The complete 1.0.2 validation record is
 preserved at [历史/1.0.2/CURRENT_VALIDATION.json](<历史/1.0.2/CURRENT_VALIDATION.json>).
 The wheel includes that archive beside this README under the same relative
-path. The current patch's measured results are in `CURRENT_VALIDATION.json`.
+path. That patch's measured results are in `历史/1.0.3/CURRENT_VALIDATION.json`.
 
 ## 1.0.2 parser phase
 

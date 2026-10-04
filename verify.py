@@ -14,16 +14,19 @@ import venv
 import zipfile
 
 ROOT = Path(__file__).resolve().parent
-WORK = ROOT / '.verification'
+WORK = ROOT / 'Build' / 'verification'
 UPSTREAM = 'https://github.com/williballenthin/python-idb.git'
 COMMIT = '5a313f27cf6200e2454eb08ef3b557227fc2e9d7'
-VERSION = '1.0.3'
-DOCUMENTS = ('README.md', 'ORIGIN.md', 'VALIDATION.md', 'DEFENSIVE_SCOPE.md', 'NAME_AUDIT.json', 'CURRENT_VALIDATION.json', '历史/1.0.2/CURRENT_VALIDATION.json')
+VERSION = '1.0.4'
+DOCUMENTS = ('README.md', 'ORIGIN.md', 'VALIDATION.md', 'DEFENSIVE_SCOPE.md', 'NAME_AUDIT.json', 'CURRENT_VALIDATION.json', '历史/1.0.2/CURRENT_VALIDATION.json', '历史/1.0.3/CURRENT_VALIDATION.json')
 
 
 def run(command, **kwargs):
     print('+', ' '.join(map(str, command)), flush=True)
-    return subprocess.run(list(map(str, command)), cwd=ROOT, check=True, **kwargs)
+    environment = dict(kwargs.pop('env', os.environ))
+    environment['PYTHONDONTWRITEBYTECODE'] = '1'
+    working_directory = kwargs.pop('cwd', ROOT)
+    return subprocess.run(list(map(str, command)), cwd=working_directory, check=True, env=environment, **kwargs)
 
 
 def source_audit():
@@ -142,20 +145,45 @@ def main():
     parser.add_argument('--runslow', action='store_true')
     parser.add_argument('--skip-tests', action='store_true', help='Reuse a separately recorded suite; does not claim a new test execution.')
     args = parser.parse_args()
-    WORK.mkdir(exist_ok=True)
+    WORK.mkdir(parents=True, exist_ok=True)
     result = {'project': 'IDBMeadow', 'source_files_verified': source_audit(), 'status': 'PASS'}
     if args.audit_only:
         print(json.dumps(result)); return
     result['naming_audit'] = json.loads(run([sys.executable, ROOT / 'checks/naming_audit.py'], capture_output=True).stdout)
     baseline = baseline_checkout(args.baseline)
     if not args.skip_tests:
-        run([sys.executable, '-m', 'pytest', 'checks', '-q', *(['--runslow'] if args.runslow else [])], env=dict(os.environ, PYTHONPATH=str(ROOT / 'src')))
+        run([sys.executable, '-m', 'pytest', 'checks', '-q', '-p', 'no:cacheprovider', *(['--runslow'] if args.runslow else [])], env=dict(os.environ, PYTHONPATH=str(ROOT / 'src')))
     result['test_execution'] = 'not repeated (--skip-tests)' if args.skip_tests else ('complete with slow cases' if args.runslow else 'default suite; slow cases explicitly skipped')
     result['database_comparison'] = compare_databases(baseline)
     result['page_comparison'] = compare_pages(baseline)
     clear_generated_build(ROOT)
     output = WORK / 'dist' / VERSION
-    run([sys.executable, '-m', 'build', '--no-isolation', '--sdist', '--wheel', '--outdir', output])
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    # Build from a source copy inside Build so setuptools metadata and wheel
+    # intermediates cannot appear in the retained source checkout.
+    with tempfile.TemporaryDirectory(prefix='package-source-', dir=WORK) as source_dir:
+        package_source = Path(source_dir)
+        inventory = json.loads((ROOT / 'SOURCE_MANIFEST.json').read_text())['files']
+        for relative in (*inventory, 'SOURCE_MANIFEST.json'):
+            target = package_source / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / relative, target)
+        # Match the compatibility inputs restored by 构建.py inside Build.
+        for item in json.loads((ROOT / '构建配置.json').read_text())['restored_inputs']:
+            original = Path(item['original'])
+            stored = Path(item['stored'])
+            assert not original.is_absolute() and '..' not in original.parts
+            assert not stored.is_absolute() and '..' not in stored.parts
+            saved = ROOT / stored
+            assert not saved.is_symlink()
+            assert hashlib.sha256(saved.read_bytes()).hexdigest() == item['sha256']
+            target = package_source / original
+            assert not target.exists(), original
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(saved, target)
+        run([sys.executable, '-m', 'build', '--no-isolation', '--sdist', '--wheel', '--outdir', output], cwd=package_source)
     wheels = list(output.glob('*.whl')); sources = list(output.glob('*.tar.gz'))
     assert len(wheels) == len(sources) == 1
     with zipfile.ZipFile(wheels[0]) as archive:
@@ -166,7 +194,7 @@ def main():
             entries = [name for name in archive.namelist() if name.endswith('/share/IDBMeadow/' + document)]
             assert len(entries) == 1 and archive.read(entries[0]) == (ROOT / '项目文档' / document).read_bytes(), document
         licenses = [name for name in archive.namelist() if name.endswith('/LICENSE.txt')]
-        assert len(licenses) == 1 and archive.read(licenses[0]) == (ROOT / 'LICENSE.txt').read_bytes()
+        assert len(licenses) == 1 and archive.read(licenses[0]) == (ROOT / '项目文档/LICENSE.txt').read_bytes()
     result['wheel_source_provenance_license_identity'] = 'PASS'
     with tarfile.open(sources[0]) as archive:
         for relative, record in json.loads((ROOT / 'SOURCE_MANIFEST.json').read_text())['files'].items():
@@ -174,7 +202,7 @@ def main():
             assert len(entries) == 1 and archive.extractfile(entries[0]).read() == (ROOT / relative).read_bytes(), relative
             assert bool(entries[0].mode & 0o111) == record['executable'], relative
     result['source_distribution_identity'] = 'PASS'
-    with tempfile.TemporaryDirectory(prefix='idbmeadow-consumer-') as directory:
+    with tempfile.TemporaryDirectory(prefix='idbmeadow-consumer-', dir=WORK) as directory:
         consumer = Path(directory)
         venv.EnvBuilder(with_pip=True).create(consumer)
         interpreter = consumer / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')

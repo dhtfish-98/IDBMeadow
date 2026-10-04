@@ -1,55 +1,65 @@
 {
   "project": "IDBMeadow",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "date": "2026-10-04",
-  "source_parent": "9967db5328c042a2a71f9a27624589603197fdfb",
-  "phase": "signature assertion test reliability, Build-only verifier output and maintainer metadata patch; all 22 runtime Python source files unchanged",
+  "source_parent": "8373473e1d7de8f2f3f7bfcb8fa3492b8b0f9286",
+  "phase": "verifier build-directory cleanup patch; runtime source unchanged",
   "upstream_commit": "5a313f27cf6200e2454eb08ef3b557227fc2e9d7",
   "historical_1_0_2_record": {
     "path": "项目文档/历史/1.0.2/CURRENT_VALIDATION.json",
     "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
     "scope": "Original 1.0.2 record, including its complete slow-suite result; preserved byte-for-byte"
   },
+  "cleanup_tests": {
+    "status": "PASS",
+    "passed": 4,
+    "filesystem": "local case-insensitive macOS volume; build and Build resolve to the same directory when Build is the actual entry",
+    "scope": "uppercase Build sentinel survives, real lowercase build removed, symlink and regular file rejected"
+  },
+  "boundary_tests": {
+    "passed": 116
+  },
+  "database_observations": {
+    "total": 51,
+    "equal": 47,
+    "precisely_checked_error_changes": 4
+  },
+  "owned_page_observations": {
+    "total": 98,
+    "equal": 80,
+    "precisely_checked_compressed_bucket_fixes": 6,
+    "fixed_header_validation": 2,
+    "actual_consumed_page_ends": 10
+  },
   "current_default_suite": {
     "status": "PASS",
     "command": "python -m pytest checks -q -p no:cacheprovider",
     "passed": 1612,
     "skipped": 160,
-    "warnings": 0,
-    "seconds": 67.85,
+    "warnings": 13,
+    "seconds": 71.58,
     "process_exit_code": 0,
-    "scope": "Local source run in isolated v1.0.4 preparation clone; packaging, pinned upstream comparisons, CI and release are separately verified"
+    "runtime_identity": "22 source hashes match the archived 1.0.2 record",
+    "scope": "First local source candidate before adding the archived 1.0.2 JSON to the wheel; final artifact evidence is recorded separately against a fresh staging snapshot"
   },
   "current_complete_slow_suite": {
-    "status": "PASS",
-    "command": "python -m pytest checks -q --runslow -p no:cacheprovider",
+    "status": "PASS_ON_PRE_FINAL_STAGED_CANDIDATE",
+    "stage": "Build/新构建/20261004T123715Z-d159070e/source",
+    "command": "python verify.py --runslow --baseline <pinned local checkout>",
     "passed": 1771,
-    "xfailed": 1,
-    "failed": 0,
-    "skipped": 0,
-    "warnings": 0,
-    "seconds": 979.64,
+    "strict_xfailed": 1,
+    "warnings": 13,
+    "seconds": 1000.57,
     "process_exit_code": 0,
-    "evidence_log": "Build/审计记录/independent-v1.0.4-full-slow-20261004.log",
-    "evidence_log_sha256": "5c1f5fb908314f529d370097d56a40215797d9d26465f070b7b3a6a0bc81c7ed",
-    "test_file_sha256": "be2166013b5f48c4e2fbb6f9ad2769f3ad491a0df5e6047c5bdd7d57148e32ba",
-    "scope": "Independent complete source suite on frozen v1.0.4 staging before final verifier output path and package metadata edits; the 22 runtime files and affected test file are unchanged afterward. Final package verification is separate."
+    "verifier_gates": "PASS: source identity, naming, pinned upstream observations, wheel/sdist identity and five isolated wheel-consumer checks",
+    "artifact_scope": "This run preceded adding the archived 1.0.2 JSON to the wheel; the final wheel is separately rebuilt and verified by a fresh default run, not claimed to have run the slow suite"
   },
   "known_test_gap": {
-    "status": "CLOSED_FOR_13_ASSERTIONS",
+    "status": "OPEN",
     "file": "checks/test_meadow_analysis.py",
-    "fixed_truthy_singleton_tuple_assertions": 13,
-    "remaining_truthy_singleton_tuple_assertions_in_file": 0,
-    "first_exposed_failure": {
-      "fixture": "checks/data/v7.6/x32/kernel32.idb",
-      "fixture_bytes": 17692398,
-      "fixture_sha256": "ff7d4548901b081719f8cf0f51cdccf811f2d7ca7b4b0d8f154420b4e561d15f",
-      "address": 1754280366,
-      "old_expected": "int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)",
-      "actual_and_new_expected": "int (__stdcall sub_689031AE)(PRTL_CRITICAL_SECTION CriticalSection, int, int, int)",
-      "pinned_upstream_same_input": "same actual signature at pinned commit 5a313f27cf6200e2454eb08ef3b557227fc2e9d7"
-    },
-    "scope": "Only existing test assertions and one fixture-specific old expected value changed; no broader IDA 7.6 support claim"
+    "count": 13,
+    "issue": "Pre-existing assert (condition,) expressions assert a truthy tuple, so their signature equalities are not established by either suite",
+    "resolution_scope": "Separate test correction and rerun; not part of the 1.0.3 Build cleanup patch"
   },
   "default_limits": {
     "input_bytes": 268435456,
@@ -94,32 +104,6 @@
   "package_consumer_scope": {
     "runtime_source_files": 22,
     "checks": 5,
-    "scope": "Verifier performs five isolated wheel-consumer checks on a staged package; this source record does not assert those checks have passed for a final release artifact"
-  },
-  "historical_1_0_3_record": {
-    "path": "项目文档/历史/1.0.3/CURRENT_VALIDATION.json",
-    "sha256": "5cf2d32448b937ff17687e1f66726dea5ffadffc7d6291fff5737fd762be5d63",
-    "scope": "Exact 1.0.3 validation record, including full slow-suite and Build cleanup evidence; preserved byte-for-byte"
-  },
-  "inherited_runtime_evidence": {
-    "record": "项目文档/历史/1.0.3/CURRENT_VALIDATION.json",
-    "scope": "1.0.3 comparisons, limits, cleanup and full slow-suite evidence are historical; runtime source bytes and fixture bytes are unchanged for this 1.0.4 test-only patch"
-  },
-  "affected_signature_tests": {
-    "status": "PASS",
-    "command": "python -m pytest checks/test_meadow_analysis.py::test_function checks/test_meadow_analysis.py::test_function_usercall -q -p no:cacheprovider",
-    "passed": 27,
-    "failed": 0,
-    "seconds": 1.61,
-    "scope": "26 version/architecture variants plus one Thumb user-call case; local source run"
-  },
-  "analysis_module_tests": {
-    "status": "PASS",
-    "command": "python -m pytest checks/test_meadow_analysis.py -q -p no:cacheprovider",
-    "passed": 341,
-    "failed": 0,
-    "seconds": 42.04,
-    "scope": "Local source run"
-  },
-  "runtime_identity": "22 runtime Python file hashes match the archived 1.0.3 record and base commit 9967db5328c042a2a71f9a27624589603197fdfb"
+    "scope": "two database API consumers, compressed TIL record, huge declared section rejection, configured input ceiling; final artifact identity/digests recorded separately"
+  }
 }

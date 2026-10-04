@@ -132,19 +132,20 @@ def meadow_test_function(meadow_kernel32_idb_local_534f982, meadow_version_local
     assert len(_name_boundary.attributes(_name_boundary.attributes(meadow_sig_22132a0)['type_details'])['args']) == 3
     meadow__get_fn_signature_d10c02a = meadow_functools.partial(meadow_get_fn_signature, meadow_kernel32_idb_local_534f982)
     if meadow_version_local_79286f8 >= 760:
-        assert (meadow__get_fn_signature_d10c02a(1754273105) == 'void (__fastcall @__security_check_cookie@4)(uintptr_t StackCookie)',)
+        assert meadow__get_fn_signature_d10c02a(1754273105) == 'void (__fastcall @__security_check_cookie@4)(uintptr_t StackCookie)'
         assert meadow__get_fn_signature_d10c02a(1754273335) == 'void* (__cdecl memset)(void*, int Val, size_t Size)'
-        assert (meadow__get_fn_signature_d10c02a(1754280366) == 'int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)',)
+        # The only bundled >=760 case is v7.6/x32; pinned upstream reads the same undecorated signature.
+        assert meadow__get_fn_signature_d10c02a(1754280366) == 'int (__stdcall sub_689031AE)(PRTL_CRITICAL_SECTION CriticalSection, int, int, int)'
     elif 760 > meadow_version_local_79286f8 >= 730:
-        assert (meadow__get_fn_signature_d10c02a(1754273105) == 'void (__fastcall @__security_check_cookie@4)(uintptr_t StackCookie)',)
+        assert meadow__get_fn_signature_d10c02a(1754273105) == 'void (__fastcall @__security_check_cookie@4)(uintptr_t StackCookie)'
         assert meadow__get_fn_signature_d10c02a(1754273335) == 'void* (__cdecl _memset)(void*, int Val, size_t Size)'
-        assert (meadow__get_fn_signature_d10c02a(1754280366) == 'int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)',)
+        assert meadow__get_fn_signature_d10c02a(1754280366) == 'int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)'
     elif meadow_version_local_79286f8 >= 720:
-        assert (meadow__get_fn_signature_d10c02a(1754491628) == 'int (__stdcall _BasepProcessInvalidImage@84)(NTSTATUS Status, int, int, int, int, int, int, int, int, int, int, int, int, int, PUNICODE_STRING, int, int, int, int, int, int)',)
+        assert meadow__get_fn_signature_d10c02a(1754491628) == 'int (__stdcall _BasepProcessInvalidImage@84)(NTSTATUS Status, int, int, int, int, int, int, int, int, int, int, int, int, int, PUNICODE_STRING, int, int, int, int, int, int)'
         assert meadow__get_fn_signature_d10c02a(1754273335) == 'void* (__cdecl _memset)(void* Dst, int Val, size_t Size)'
-        assert (meadow__get_fn_signature_d10c02a(1754280366) == 'int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)',)
+        assert meadow__get_fn_signature_d10c02a(1754280366) == 'int (__thiscall ?NotifyLoadStringResource@CMessageMapper@FSPErrorMessages@@QAEJPAUHINSTANCE__@@IPBGKPAPAX@Z)(FSPErrorMessages::CMessageMapper* this, HINSTANCE CriticalSection, unsigned int, unsigned int16*, unsigned int, void**)'
     elif meadow_version_local_79286f8 >= 700:
-        assert (meadow__get_fn_signature_d10c02a(1754491628) == 'int (__cdecl BasepProcessInvalidImage)(NTSTATUS NtStatus, int, int, int, int, int, int, int, int, int, int, int, int, int, PUNICODE_STRING, int, int, int, int, int, int)',)
+        assert meadow__get_fn_signature_d10c02a(1754491628) == 'int (__cdecl BasepProcessInvalidImage)(NTSTATUS NtStatus, int, int, int, int, int, int, int, int, int, int, int, int, int, PUNICODE_STRING, int, int, int, int, int, int)'
         assert meadow__get_fn_signature_d10c02a(1754286829) == 'int (__thiscall sub_68904AED)(HANDLE FileHandle, int, int)'
     elif meadow_version_local_79286f8 > 630:
         assert meadow__get_fn_signature_d10c02a(1754354985) == 'int (__cdecl sub_68915529)(LPCWSTR lpString1, int, int)'
@@ -153,18 +154,18 @@ def meadow_test_function(meadow_kernel32_idb_local_534f982, meadow_version_local
         assert meadow__get_fn_signature_d10c02a(1754354985) == 'int (__cdecl sub_68915529)(PCNZWCH Buf1, int, int)'
         assert meadow__get_fn_signature_d10c02a(1754362575) == 'int (__thiscall sub_689172CF)(DWORD Size, int, int, int, int)'
     elif meadow_version_local_79286f8 == 500:
-        assert (meadow__get_fn_signature_d10c02a(1754280280) == 'int (__fastcall _BasepNotifyLoadStringResource@16)(int, int, int, int, int, int)',)
+        assert meadow__get_fn_signature_d10c02a(1754280280) == 'int (__fastcall _BasepNotifyLoadStringResource@16)(int, int, int, int, int, int)'
         assert meadow__get_fn_signature_d10c02a(1754293521) == 'int (__cdecl _StringCbPrintfW)(wchar_t*, int, wchar_t*, int8)'
 
 @_name_boundary.callable_contract({}, 'test_function_usercall')
 def meadow_test_function_usercall():
     meadow__db_2ba68ce = meadow_load_idb(_name_boundary.attributes(meadow_os)['path'].join(meadow_CD, 'data', 'thumb', 'ls.idb'))
     meadow__get_fn_signature_cdb819c = meadow_functools.partial(meadow_get_fn_signature, meadow__db_2ba68ce)
-    assert (meadow__get_fn_signature_cdb819c(98808) == 'unsigned int8* (__usercall human_readable@<R0>)(uintmax_t n@<0:R0, 4:R1>, unsigned int8* buf@<R2>, int opts@<R3>, uintmax_t from_block_size, uintmax_t to_block_size)',)
-    assert (meadow__get_fn_signature_cdb819c(101780) == 'unsigned int8* (__usercall imaxtostr@<R0>)(intmax_t i@<0:R0, 4:R1>, unsigned int8* buf@<R2>)',)
-    assert (meadow__get_fn_signature_cdb819c(101888) == 'unsigned int8* (__usercall umaxtostr@<R0>)(uintmax_t i@<0:R0, 4:R1>, unsigned int8* buf@<R2>)',)
-    assert (meadow__get_fn_signature_cdb819c(112964) == 'uintmax_t (__usercall xnumtoumax@<R1:R0>)(unsigned int8* n_str@<R0>, int base@<R1>, uintmax_t min@<0:R2, 4:R3>, uintmax_t max, unsigned int8* suffixes, unsigned int8* err, int err_exit)',)
-    assert (meadow__get_fn_signature_cdb819c(113236) == 'uintmax_t (__usercall xdectoumax@<R1:R0>)(unsigned int8* n_str@<R0>, uintmax_t min@<0:R2, 4:R3>, uintmax_t max, unsigned int8* suffixes, unsigned int8* err, int err_exit)',)
+    assert meadow__get_fn_signature_cdb819c(98808) == 'unsigned int8* (__usercall human_readable@<R0>)(uintmax_t n@<0:R0, 4:R1>, unsigned int8* buf@<R2>, int opts@<R3>, uintmax_t from_block_size, uintmax_t to_block_size)'
+    assert meadow__get_fn_signature_cdb819c(101780) == 'unsigned int8* (__usercall imaxtostr@<R0>)(intmax_t i@<0:R0, 4:R1>, unsigned int8* buf@<R2>)'
+    assert meadow__get_fn_signature_cdb819c(101888) == 'unsigned int8* (__usercall umaxtostr@<R0>)(uintmax_t i@<0:R0, 4:R1>, unsigned int8* buf@<R2>)'
+    assert meadow__get_fn_signature_cdb819c(112964) == 'uintmax_t (__usercall xnumtoumax@<R1:R0>)(unsigned int8* n_str@<R0>, int base@<R1>, uintmax_t min@<0:R2, 4:R3>, uintmax_t max, unsigned int8* suffixes, unsigned int8* err, int err_exit)'
+    assert meadow__get_fn_signature_cdb819c(113236) == 'uintmax_t (__usercall xdectoumax@<R1:R0>)(unsigned int8* n_str@<R0>, uintmax_t min@<0:R2, 4:R3>, uintmax_t max, unsigned int8* suffixes, unsigned int8* err, int err_exit)'
 
 @meadow_kern32_test()
 @_name_boundary.callable_contract({'bitness': 'meadow_bitness_f338ef3', 'expected': 'meadow_expected_c255219', 'kernel32_idb': 'meadow_kernel32_idb_local_fc78e59', 'version': 'meadow_version_local_84e71cd'}, 'test_stack_change_points')

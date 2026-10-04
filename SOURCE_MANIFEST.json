@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_VALIDATION.json": {
-      "sha256": "5cf2d32448b937ff17687e1f66726dea5ffadffc7d6291fff5737fd762be5d63",
-      "bytes": 6170,
+      "sha256": "d25a4def316e8a19f7ea0b59b02ea37c3213cf4dcdd8746500bd11032be977d3",
+      "bytes": 7649,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -23,12 +23,12 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "49378aa9c099661fb472535e67e9c9da3ac9285dfa42e6686abd682dad3bae29",
-      "bytes": 1060,
+      "sha256": "6186020d519d3ca8ed128b67990ea81c87ac7c66c2dde6ba52bd675e4ea6e9c2",
+      "bytes": 854,
       "executable": false
     },
     "项目文档/NAME_AUDIT.json": {
-      "sha256": "4a5d8f6008ab3be452f20f32f36280765304dabe46a15b04cbf786fb9af41c13",
+      "sha256": "8e6f4b2216b143d42c6fc579504a86faa2e7c92e1f2c09ac523f375266420e73",
       "bytes": 4718,
       "executable": false
     },
@@ -348,8 +348,8 @@
       "executable": false
     },
     "checks/test_meadow_analysis.py": {
-      "sha256": "029d80f087c8147bfbcc551ad59fd027db0b633c9418d00e0758d7a4e73c1d10",
-      "bytes": 32499,
+      "sha256": "be2166013b5f48c4e2fbb6f9ad2769f3ad491a0df5e6047c5bdd7d57148e32ba",
+      "bytes": 32419,
       "executable": false
     },
     "checks/test_meadow_bounds.py": {
@@ -408,8 +408,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "5648b7c60ccd495d19c32eaf21541d6442c7921298291fe8841d29939f889e6d",
-      "bytes": 1077,
+      "sha256": "17b566b38d8455f2af570a50808c75dab93b6856f4dca1aaac683465419fb638",
+      "bytes": 1201,
       "executable": false
     },
     "src/idbmeadow/__init__.py": {
@@ -523,8 +523,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "d0b31089cf491c09c3e0c0740ac810db456d994c402d9d83873febd141523958",
-      "bytes": 10922,
+      "sha256": "d816764c45563510c61c7b1d2479783222198541c6761da8d6589c646fcf999f",
+      "bytes": 12668,
       "executable": true
     },
     "构建.py": {
@@ -533,13 +533,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "2f33ebfcbd8a2a7909c6161e165fb22004b5a97ceee122e9dba1a0872325e0d4",
+      "sha256": "46a73722d02cbebf3b30c5104f3235921cb8e4cf258b4beeda7c970c996bdec2",
       "bytes": 1738,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "7150d0ed10a273ed3451de8bc1c8ec7fa3f43589a108623228830f9f8f44a125",
-      "bytes": 2755,
+      "sha256": "ea23722fd9fe059b3216e27b9b3d26f85e0507b5324771c44bbf461a40f992c2",
+      "bytes": 2976,
       "executable": false
     },
     "项目文档/LICENSE.txt": {
@@ -553,13 +553,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "730da85c4597ee44273286369d3773f8a18df40c1e51f1165656ceaf65ec8d0e",
-      "bytes": 5430,
+      "sha256": "6322dce2016c7552d19ba3798e1120ed4d1c857f780576297ad25e9f764c8146",
+      "bytes": 6375,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "080be45202c24b35770a67f9ec71a7ea98fcfcb8c8e866dd76c6e65dc1f14c04",
-      "bytes": 6645,
+      "sha256": "60c8175e6fd1725dbfcd7bf6e189a473d06d87ea25097968b73b4225352c7fee",
+      "bytes": 9762,
       "executable": false
     },
     "项目文档/checks/data/empty/readme.txt": {
@@ -583,8 +583,8 @@
       "executable": false
     },
     "项目文档/目录与构建.md": {
-      "sha256": "4edfacadd604380c93c62035073e8e00dcd7de3275b15ece7780a77b96af7a01",
-      "bytes": 969,
+      "sha256": "a98a34fe106379307e781dddf82085717c16d66d0eb6fe15f85942f66b55662a",
+      "bytes": 1217,
       "executable": false
     },
     "checks/test_verify_build_cleanup.py": {
@@ -595,6 +595,11 @@
     "项目文档/历史/1.0.2/CURRENT_VALIDATION.json": {
       "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
       "bytes": 4338,
+      "executable": false
+    },
+    "项目文档/历史/1.0.3/CURRENT_VALIDATION.json": {
+      "sha256": "5cf2d32448b937ff17687e1f66726dea5ffadffc7d6291fff5737fd762be5d63",
+      "bytes": 6170,
       "executable": false
     }
   },
@@ -610,5 +615,11 @@
     "base_commit": "8373473e1d7de8f2f3f7bfcb8fa3492b8b0f9286",
     "scope": "Verifier cleanup and release metadata only; runtime source bytes unchanged",
     "historical_validation": "项目文档/历史/1.0.2/CURRENT_VALIDATION.json"
+  },
+  "test_assertion_patch": {
+    "version": "1.0.4",
+    "base_commit": "9967db5328c042a2a71f9a27624589603197fdfb",
+    "scope": "13 truthy tuple assertions and one v7.6/x32 fixture expectation corrected; direct verifier output placed in Build; dhtfish98 maintainer metadata added; 22 runtime source files unchanged",
+    "historical_validation": "项目文档/历史/1.0.3/CURRENT_VALIDATION.json"
   }
 }

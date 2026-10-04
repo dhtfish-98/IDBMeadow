@@ -1,10 +1,8 @@
 include 项目文档/DEFENSIVE_SCOPE.md 项目文档/NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json verify.py
 recursive-include src *.py
 recursive-include checks *
-recursive-include fixtures *
-recursive-include historical_checks *.py
 include .gitignore 项目文档/CURRENT_VALIDATION.json
-recursive-include .github *.yml *.yaml
+recursive-include .github *.yml
 global-exclude *.pyc
 global-exclude .DS_Store
 prune **/__pycache__
@@ -19,7 +17,7 @@ prune Build/环境
 prune Build/缓存
 prune Build/中间
 prune Build/临时
+prune Build/verification
 global-exclude __pycache__ *.py[cod] .DS_Store
 
-# Original logical paths exist only in the staged compatibility view.
-include DEFENSIVE_SCOPE.md LICENSE.txt ORIGIN.md README.md VALIDATION.md checks/data/empty/readme.txt checks/data/kernel32/readme.txt checks/data/reopen/readme.txt
+# Original logical paths are restored by 构建.py in Build/源码 when needed.
