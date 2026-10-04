@@ -1,9 +1,9 @@
-include 项目文档/DEFENSIVE_SCOPE.md NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json verify.py
+include 项目文档/DEFENSIVE_SCOPE.md 项目文档/NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json verify.py
 recursive-include src *.py
 recursive-include checks *
 recursive-include fixtures *
 recursive-include historical_checks *.py
-include .gitignore CURRENT_VALIDATION.json
+include .gitignore 项目文档/CURRENT_VALIDATION.json
 recursive-include .github *.yml *.yaml
 global-exclude *.pyc
 global-exclude .DS_Store

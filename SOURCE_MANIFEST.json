@@ -12,7 +12,7 @@
       "bytes": 205,
       "executable": false
     },
-    "CURRENT_VALIDATION.json": {
+    "项目文档/CURRENT_VALIDATION.json": {
       "sha256": "7604531340fad54dd3816b88c80d9e37ceb6a218fe2d9a2bfec2a80bcfb2309d",
       "bytes": 4338,
       "executable": false
@@ -23,11 +23,11 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "767619732fcddd1bc873335337af18b5c4e6e160e6f76554e98c5aff5ac352ef",
-      "bytes": 1034,
+      "sha256": "49378aa9c099661fb472535e67e9c9da3ac9285dfa42e6686abd682dad3bae29",
+      "bytes": 1060,
       "executable": false
     },
-    "NAME_AUDIT.json": {
+    "项目文档/NAME_AUDIT.json": {
       "sha256": "4a5d8f6008ab3be452f20f32f36280765304dabe46a15b04cbf786fb9af41c13",
       "bytes": 4718,
       "executable": false
@@ -338,8 +338,8 @@
       "executable": false
     },
     "checks/naming_audit.py": {
-      "sha256": "2182c75c921b811cf97f3f088b9156ee52e5ef158aeea693ccbdf6a86abcd251",
-      "bytes": 2416,
+      "sha256": "8e5a67c9593eed8854d064d4c9536ff1ede89c53d2618e8d42217aac1b4de709",
+      "bytes": 2429,
       "executable": false
     },
     "checks/page_observations.py": {
@@ -408,8 +408,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "6d4a9584f3e08c18a0ca8553ad8980a36ae1538fcc94193388dc872328491fff",
-      "bytes": 964,
+      "sha256": "3af3646665eea6b4a05038430e212fb4095174df41e931834e84a983ffa80fdf",
+      "bytes": 990,
       "executable": false
     },
     "src/idbmeadow/__init__.py": {
@@ -523,8 +523,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "c39ffe50e8dee33e1947c49575169b29d7f50c5ba426a665fa295e9198895b54",
-      "bytes": 10231,
+      "sha256": "6ddd151eb505047f799a81ac52e51c97eb3c997bd607fdddd78ef957173a2c34",
+      "bytes": 10261,
       "executable": true
     },
     "构建.py": {

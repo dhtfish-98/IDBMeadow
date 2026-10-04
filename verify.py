@@ -35,7 +35,7 @@ def source_audit():
         data = path.read_bytes()
         assert len(data) == record['bytes'] and hashlib.sha256(data).hexdigest() == record['sha256'], relative
         assert bool(path.stat().st_mode & 0o111) == record['executable'], relative + ' mode differs'
-    recorded = json.loads((ROOT / 'CURRENT_VALIDATION.json').read_text())['runtime_sha256']
+    recorded = json.loads((ROOT / '项目文档/CURRENT_VALIDATION.json').read_text())['runtime_sha256']
     assert recorded == {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in sorted(runtime)}, 'Runtime identity differs from validation record'
     return len(manifest['files'])
 
@@ -149,7 +149,7 @@ def main():
             assert archive.read(relative) == source.read_bytes(), relative
         for document in DOCUMENTS:
             entries = [name for name in archive.namelist() if name.endswith('/share/IDBMeadow/' + document)]
-            assert len(entries) == 1 and archive.read(entries[0]) == (ROOT / document).read_bytes(), document
+            assert len(entries) == 1 and archive.read(entries[0]) == (ROOT / '项目文档' / document).read_bytes(), document
         licenses = [name for name in archive.namelist() if name.endswith('/LICENSE.txt')]
         assert len(licenses) == 1 and archive.read(licenses[0]) == (ROOT / 'LICENSE.txt').read_bytes()
     result['wheel_source_provenance_license_identity'] = 'PASS'

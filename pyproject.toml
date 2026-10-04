@@ -18,7 +18,7 @@ testpaths = ["checks"]
 test = ["pytest==9.1.1", "build==1.6.1", "setuptools==84.0.0", "wheel==0.48.0", "libcst==1.9.0"]
 
 [tool.setuptools.data-files]
-"share/IDBMeadow" = ["项目文档/README.md", "项目文档/ORIGIN.md", "项目文档/VALIDATION.md", "项目文档/DEFENSIVE_SCOPE.md", "NAME_AUDIT.json", "CURRENT_VALIDATION.json"]
+"share/IDBMeadow" = ["项目文档/README.md", "项目文档/ORIGIN.md", "项目文档/VALIDATION.md", "项目文档/DEFENSIVE_SCOPE.md", "项目文档/NAME_AUDIT.json", "项目文档/CURRENT_VALIDATION.json"]
 
 [tool.setuptools]
 license-files = ["项目文档/LICENSE.txt"]
